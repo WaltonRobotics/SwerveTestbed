@@ -18,8 +18,6 @@ public class Constants {
     }
 
     public static final class SwerveDriveConfig {
-        public static final double kDeadbandXLock = 0.2;
-
         // TODO: verify diameter and run calibration
         // 500 cm calibration = actual / odometry
         public static final double kWheelDiameterInches = 3.0 * (584.0 / 501.0);
@@ -27,8 +25,12 @@ public class Constants {
         // From: https://github.com/strykeforce/axis-config/
         public static final double kMaxSpeedMetersPerSecond = 3.889;
 
+        public static final double kDistanceBetweenWheelsWidthWiseMeters = 0.6477;
+        public static final double kDistanceBetweenWheelsLengthWiseMeters = 0.5461;
+
         public static final double kMaxOmega =
-                (kMaxSpeedMetersPerSecond / Math.hypot(0.5461 / 2.0, 0.6477 / 2.0))
+                (kMaxSpeedMetersPerSecond / Math.hypot(kDistanceBetweenWheelsLengthWiseMeters / 2.0,
+                        kDistanceBetweenWheelsWidthWiseMeters / 2.0))
                         / 2.0; // wheel locations below
 
         // From: https://github.com/strykeforce/axis-config/
@@ -42,8 +44,8 @@ public class Constants {
 
 
         public static Translation2d[] getWheelLocationMeters() {
-            final double x = 0.5461 / 2.0; // front-back, was ROBOT_LENGTH
-            final double y = 0.6477 / 2.0; // left-right, was ROBOT_WIDTH
+            final double x = kDistanceBetweenWheelsLengthWiseMeters / 2.0; // front-back, was ROBOT_LENGTH
+            final double y = kDistanceBetweenWheelsWidthWiseMeters / 2.0; // left-right, was ROBOT_WIDTH
             Translation2d[] locs = new Translation2d[4];
             locs[0] = new Translation2d(x, y); // left front
             locs[1] = new Translation2d(x, -y); // right front

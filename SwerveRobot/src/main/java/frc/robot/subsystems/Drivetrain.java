@@ -15,6 +15,7 @@ import org.strykeforce.swerve.TalonSwerveModule;
 import static frc.robot.Constants.SwerveDriveConfig.*;
 
 public class Drivetrain extends SubsystemBase {
+
     private final SwerveDrive swerveDrive;
 
     public Drivetrain() {
@@ -26,7 +27,6 @@ public class Drivetrain extends SubsystemBase {
 
         TalonSwerveModule[] swerveModules = new TalonSwerveModule[4];
         Translation2d[] wheelLocations = getWheelLocationMeters();
-
 
         for (int i = 0; i < 4; i++) {
             var azimuthTalon = new TalonSRX(i);
