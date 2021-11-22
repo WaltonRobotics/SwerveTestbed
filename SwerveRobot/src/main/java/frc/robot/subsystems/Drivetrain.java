@@ -3,6 +3,8 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.kauailabs.navx.frc.AHRS;
+import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.geometry.Translation2d;
@@ -17,6 +19,7 @@ import static frc.robot.Constants.SwerveDriveConfig.*;
 public class Drivetrain extends SubsystemBase {
 
     private final SwerveDrive swerveDrive;
+    private final AHRS ahrs = new AHRS(SPI.Port.kMXP);
 
     public Drivetrain() {
         var moduleBuilder =
@@ -52,9 +55,9 @@ public class Drivetrain extends SubsystemBase {
             swerveModules[i].loadAndSetAzimuthZeroReference();
         }
 
-        swerveDrive = new SwerveDrive(swerveModules);
-        swerveDrive.resetGyro();
-        swerveDrive.setGyroOffset(Rotation2d.fromDegrees(180));
+        swerveDrive = new SwerveDrive(ahrs, swerveModules);
+        resetHeading();
+//        setHeadingOffset(Rotation2d.fromDegrees(180));
     }
 
     /**
@@ -118,11 +121,11 @@ public class Drivetrain extends SubsystemBase {
         swerveDrive.move(vxMetersPerSecond, vyMetersPerSecond, omegaRadiansPerSecond, isFieldOriented);
     }
 
-    public void resetGyro() {
+    public void resetHeading() {
         swerveDrive.resetGyro();
     }
 
-    public void setGyroOffset(Rotation2d offsetRads) {
+    public void setHeadingOffset(Rotation2d offsetRads) {
         swerveDrive.setGyroOffset(offsetRads);
     }
 
@@ -140,4 +143,5 @@ public class Drivetrain extends SubsystemBase {
         ((TalonSwerveModule) swerveDrive.getSwerveModules()[3])
                 .setAzimuthRotation2d(Rotation2d.fromDegrees(45));
     }
+
 }
