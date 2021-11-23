@@ -7,12 +7,14 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 import edu.wpi.first.wpilibj.AnalogEncoder;
 import edu.wpi.first.wpilibj.AnalogInput;
+import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.controller.ProfiledPIDController;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.geometry.Translation2d;
 import edu.wpi.first.wpilibj.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.utils.WaltonSwerveModule;
@@ -37,28 +39,36 @@ public class Drivetrain extends SubsystemBase {
         Translation2d[] wheelLocations = getWheelLocationMeters();
 
         for (int i = 0; i < 4; i++) {
-            var azimuthSparkMax = new CANSparkMax(i, CANSparkMaxLowLevel.MotorType.kBrushless);
+            var azimuthSparkMax = new CANSparkMax(i + 1, CANSparkMaxLowLevel.MotorType.kBrushless);
             azimuthSparkMax.restoreFactoryDefaults();
             azimuthSparkMax.enableVoltageCompensation(12.0);
             azimuthSparkMax.setSmartCurrentLimit(80);
             azimuthSparkMax.setOpenLoopRampRate(0.0);
             azimuthSparkMax.setIdleMode(CANSparkMax.IdleMode.kCoast);
+            azimuthSparkMax.setInverted(true);
 
-            var driveTalon = new TalonFX(i + 10);
+            var driveTalon = new TalonFX(i + 11);
             driveTalon.configFactoryDefault(kTalonConfigTimeout);
             driveTalon.configAllSettings(getDriveTalonConfig(), kTalonConfigTimeout);
             driveTalon.enableVoltageCompensation(true);
             driveTalon.setNeutralMode(NeutralMode.Brake);
 
+            DutyCycleEncoder encoder = new DutyCycleEncoder(i);
+            encoder.setDistancePerRotation(4096.0);
+
+            ProfiledPIDController controller = new ProfiledPIDController(
+                    10.0 / 4096.0, 0.0, 0.0,
+                    new TrapezoidProfile.Constraints(800 * 10, 100 * 10)
+            );
+
+            controller.setTolerance(30.0);
+
             swerveModules[i] =
                     moduleBuilder
                             .azimuthSparkMax(azimuthSparkMax)
                             .driveTalon(driveTalon)
-                            .azimuthEncoder(new AnalogEncoder(new AnalogInput(i)))
-                            .azimuthController(new ProfiledPIDController(
-                                    1.0, 0.0, 0.0,
-                                    new TrapezoidProfile.Constraints(100, 100)
-                            ))
+                            .azimuthEncoder(encoder)
+                            .azimuthController(controller)
                             .wheelLocationMeters(wheelLocations[i])
                             .build();
 
@@ -67,7 +77,11 @@ public class Drivetrain extends SubsystemBase {
 
         swerveDrive = new SwerveDrive(ahrs, swerveModules);
         resetHeading();
-//        setHeadingOffset(Rotation2d.fromDegrees(180));
+        setHeadingOffset(Rotation2d.fromDegrees(180));
+
+//        for (SwerveModule module : getSwerveModules()) {
+//            module.storeAzimuthZeroReference();
+//        }
     }
 
     /**
@@ -114,6 +128,11 @@ public class Drivetrain extends SubsystemBase {
         for (SwerveModule module : getSwerveModules()) {
             ((WaltonSwerveModule) module).periodic();
         }
+
+        SmartDashboard.putNumber("Left front", ((WaltonSwerveModule)getSwerveModules()[0]).getAzimuthAbsoluteEncoderCounts());
+        SmartDashboard.putNumber("Right front", ((WaltonSwerveModule)getSwerveModules()[1]).getAzimuthAbsoluteEncoderCounts());
+        SmartDashboard.putNumber("Left back", ((WaltonSwerveModule)getSwerveModules()[2]).getAzimuthAbsoluteEncoderCounts());
+        SmartDashboard.putNumber("Right back", ((WaltonSwerveModule)getSwerveModules()[3]).getAzimuthAbsoluteEncoderCounts());
     }
 
     /**
