@@ -54,33 +54,6 @@ public class Constants {
             return locs;
         }
 
-        public static TalonSRXConfiguration getAzimuthTalonConfig() {
-            // constructor sets encoder to Quad/CTRE_MagEncoder_Relative
-            TalonSRXConfiguration azimuthConfig = new TalonSRXConfiguration();
-
-            azimuthConfig.primaryPID.selectedFeedbackCoefficient = 1.0;
-            azimuthConfig.auxiliaryPID.selectedFeedbackSensor = FeedbackDevice.None;
-
-            azimuthConfig.forwardLimitSwitchSource = LimitSwitchSource.Deactivated;
-            azimuthConfig.reverseLimitSwitchSource = LimitSwitchSource.Deactivated;
-
-            azimuthConfig.continuousCurrentLimit = 10;
-            azimuthConfig.peakCurrentDuration = 0;
-            azimuthConfig.peakCurrentLimit = 0;
-            azimuthConfig.slot0.kP = 10.0;
-            azimuthConfig.slot0.kI = 0.0;
-            azimuthConfig.slot0.kD = 100.0;
-            azimuthConfig.slot0.kF = 0.0;
-            azimuthConfig.slot0.integralZone = 0;
-            azimuthConfig.slot0.allowableClosedloopError = 0;
-            azimuthConfig.slot0.maxIntegralAccumulator = 0;
-            azimuthConfig.motionCruiseVelocity = 800;
-            azimuthConfig.motionAcceleration = 10_000;
-            azimuthConfig.velocityMeasurementWindow = 64;
-            azimuthConfig.voltageCompSaturation = 12;
-            return azimuthConfig;
-        }
-
         public static TalonFXConfiguration getDriveTalonConfig() {
             TalonFXConfiguration driveConfig = new TalonFXConfiguration();
             driveConfig.supplyCurrLimit.currentLimit = 0.04;

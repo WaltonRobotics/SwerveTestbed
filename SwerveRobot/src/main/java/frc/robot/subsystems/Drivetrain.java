@@ -2,17 +2,22 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.kauailabs.navx.frc.AHRS;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel;
+import edu.wpi.first.wpilibj.AnalogEncoder;
+import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.controller.ProfiledPIDController;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.geometry.Translation2d;
 import edu.wpi.first.wpilibj.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.wpilibj.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.utils.WaltonSwerveModule;
 import org.strykeforce.swerve.SwerveDrive;
 import org.strykeforce.swerve.SwerveModule;
-import org.strykeforce.swerve.TalonSwerveModule;
 
 import static frc.robot.Constants.SwerveDriveConfig.*;
 
@@ -23,21 +28,21 @@ public class Drivetrain extends SubsystemBase {
 
     public Drivetrain() {
         var moduleBuilder =
-                new TalonSwerveModule.Builder()
+                new WaltonSwerveModule.Builder()
                         .driveGearRatio(kDriveGearRatio)
                         .wheelDiameterInches(kWheelDiameterInches)
                         .driveMaximumMetersPerSecond(kMaxSpeedMetersPerSecond);
 
-        TalonSwerveModule[] swerveModules = new TalonSwerveModule[4];
+        WaltonSwerveModule[] swerveModules = new WaltonSwerveModule[4];
         Translation2d[] wheelLocations = getWheelLocationMeters();
 
         for (int i = 0; i < 4; i++) {
-            var azimuthTalon = new TalonSRX(i);
-            azimuthTalon.configFactoryDefault(kTalonConfigTimeout);
-            azimuthTalon.configAllSettings(getAzimuthTalonConfig(), kTalonConfigTimeout);
-            azimuthTalon.enableCurrentLimit(true);
-            azimuthTalon.enableVoltageCompensation(true);
-            azimuthTalon.setNeutralMode(NeutralMode.Coast);
+            var azimuthSparkMax = new CANSparkMax(i, CANSparkMaxLowLevel.MotorType.kBrushless);
+            azimuthSparkMax.restoreFactoryDefaults();
+            azimuthSparkMax.enableVoltageCompensation(12.0);
+            azimuthSparkMax.setSmartCurrentLimit(80);
+            azimuthSparkMax.setOpenLoopRampRate(0.0);
+            azimuthSparkMax.setIdleMode(CANSparkMax.IdleMode.kCoast);
 
             var driveTalon = new TalonFX(i + 10);
             driveTalon.configFactoryDefault(kTalonConfigTimeout);
@@ -47,8 +52,13 @@ public class Drivetrain extends SubsystemBase {
 
             swerveModules[i] =
                     moduleBuilder
-                            .azimuthTalon(azimuthTalon)
+                            .azimuthSparkMax(azimuthSparkMax)
                             .driveTalon(driveTalon)
+                            .azimuthEncoder(new AnalogEncoder(new AnalogInput(i)))
+                            .azimuthController(new ProfiledPIDController(
+                                    1.0, 0.0, 0.0,
+                                    new TrapezoidProfile.Constraints(100, 100)
+                            ))
                             .wheelLocationMeters(wheelLocations[i])
                             .build();
 
@@ -100,6 +110,10 @@ public class Drivetrain extends SubsystemBase {
     @Override
     public void periodic() {
         swerveDrive.periodic();
+
+        for (SwerveModule module : getSwerveModules()) {
+            ((WaltonSwerveModule) module).periodic();
+        }
     }
 
     /**
@@ -134,13 +148,13 @@ public class Drivetrain extends SubsystemBase {
     }
 
     public void xLockSwerveDrive() {
-        ((TalonSwerveModule) swerveDrive.getSwerveModules()[0])
+        ((WaltonSwerveModule) swerveDrive.getSwerveModules()[0])
                 .setAzimuthRotation2d(Rotation2d.fromDegrees(45));
-        ((TalonSwerveModule) swerveDrive.getSwerveModules()[1])
+        ((WaltonSwerveModule) swerveDrive.getSwerveModules()[1])
                 .setAzimuthRotation2d(Rotation2d.fromDegrees(-45));
-        ((TalonSwerveModule) swerveDrive.getSwerveModules()[2])
+        ((WaltonSwerveModule) swerveDrive.getSwerveModules()[2])
                 .setAzimuthRotation2d(Rotation2d.fromDegrees(-45));
-        ((TalonSwerveModule) swerveDrive.getSwerveModules()[3])
+        ((WaltonSwerveModule) swerveDrive.getSwerveModules()[3])
                 .setAzimuthRotation2d(Rotation2d.fromDegrees(45));
     }
 
