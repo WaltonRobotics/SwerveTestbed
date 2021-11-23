@@ -6,6 +6,7 @@ import com.ctre.phoenix.motorcontrol.VelocityMeasPeriod;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
 import edu.wpi.first.wpilibj.geometry.Translation2d;
+import edu.wpi.first.wpilibj.util.Units;
 
 public class Constants {
 
@@ -25,8 +26,8 @@ public class Constants {
         // From: https://github.com/strykeforce/axis-config/
         public static final double kMaxSpeedMetersPerSecond = 3.889;
 
-        public static final double kDistanceBetweenWheelsWidthWiseMeters = 0.6477;
-        public static final double kDistanceBetweenWheelsLengthWiseMeters = 0.5461;
+        public static final double kDistanceBetweenWheelsWidthWiseMeters = Units.inchesToMeters(18.375);
+        public static final double kDistanceBetweenWheelsLengthWiseMeters = Units.inchesToMeters(20.0);
 
         public static final double kMaxOmega =
                 (kMaxSpeedMetersPerSecond / Math.hypot(kDistanceBetweenWheelsLengthWiseMeters / 2.0,
