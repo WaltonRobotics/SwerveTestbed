@@ -40,7 +40,7 @@ public class DriveCommand extends CommandBase {
         double vy = strafe * kMaxSpeedMetersPerSecond;
         double omega = yaw * kMaxOmega;
 
-        drivetrain.drive(vx, vy, omega);
+        drivetrain.move(vx, vy, omega, true);
     }
 
     @Override

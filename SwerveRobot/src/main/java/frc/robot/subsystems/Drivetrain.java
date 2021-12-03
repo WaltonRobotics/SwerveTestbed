@@ -5,8 +5,6 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
-import edu.wpi.first.wpilibj.AnalogEncoder;
-import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.controller.ProfiledPIDController;
@@ -24,6 +22,8 @@ import org.strykeforce.swerve.SwerveModule;
 import static frc.robot.Constants.SwerveDriveConfig.*;
 
 public class Drivetrain extends SubsystemBase {
+
+    private boolean loadedAzimuthReference = false;
 
     private final SwerveDrive swerveDrive;
     private final AHRS ahrs = new AHRS(SPI.Port.kMXP);
@@ -56,12 +56,19 @@ public class Drivetrain extends SubsystemBase {
             DutyCycleEncoder encoder = new DutyCycleEncoder(i);
             encoder.setDistancePerRotation(4096.0);
 
+            // TODO: Add trajectory command!
+
+            // TODO: Maybe play with slew rate limiter/linear curve
+
+            // 300 sensor units / 1 ms ->
+            // TODO: Add d term
             ProfiledPIDController controller = new ProfiledPIDController(
-                    10.0 / 4096.0, 0.0, 0.0,
-                    new TrapezoidProfile.Constraints(800 * 10, 100 * 10)
+                    /* 20.0 / 1023.0 */ 10.0 / 4096.0, 0.0, 0.0,
+                    new TrapezoidProfile.Constraints(800 * 10, 1000 * 10)
             );
 
             controller.setTolerance(30.0);
+            controller.enableContinuousInput(-90 * 4096.0, 90 * 4096.0);
 
             swerveModules[i] =
                     moduleBuilder
@@ -73,6 +80,7 @@ public class Drivetrain extends SubsystemBase {
                             .build();
 
             swerveModules[i].loadAndSetAzimuthZeroReference();
+            loadedAzimuthReference = true;
         }
 
         swerveDrive = new SwerveDrive(ahrs, swerveModules);
@@ -125,14 +133,22 @@ public class Drivetrain extends SubsystemBase {
     public void periodic() {
         swerveDrive.periodic();
 
-        for (SwerveModule module : getSwerveModules()) {
-            ((WaltonSwerveModule) module).periodic();
+        // TODO: Make custom WaltonSwerveDrive class
+        if (loadedAzimuthReference) {
+            for (SwerveModule module : getSwerveModules()) {
+                ((WaltonSwerveModule) module).periodic();
+            }
         }
 
         SmartDashboard.putNumber("Left front", ((WaltonSwerveModule)getSwerveModules()[0]).getAzimuthAbsoluteEncoderCounts());
         SmartDashboard.putNumber("Right front", ((WaltonSwerveModule)getSwerveModules()[1]).getAzimuthAbsoluteEncoderCounts());
         SmartDashboard.putNumber("Left back", ((WaltonSwerveModule)getSwerveModules()[2]).getAzimuthAbsoluteEncoderCounts());
         SmartDashboard.putNumber("Right back", ((WaltonSwerveModule)getSwerveModules()[3]).getAzimuthAbsoluteEncoderCounts());
+
+        SmartDashboard.putNumber("Left front error", ((WaltonSwerveModule)getSwerveModules()[0]).getAzimuthClosedLoopError());
+        SmartDashboard.putNumber("Right front error", ((WaltonSwerveModule)getSwerveModules()[1]).getAzimuthClosedLoopError());
+        SmartDashboard.putNumber("Left back error", ((WaltonSwerveModule)getSwerveModules()[2]).getAzimuthClosedLoopError());
+        SmartDashboard.putNumber("Right back error", ((WaltonSwerveModule)getSwerveModules()[3]).getAzimuthClosedLoopError());
     }
 
     /**
