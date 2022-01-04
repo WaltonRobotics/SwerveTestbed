@@ -6,6 +6,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.revrobotics.CANSparkMax;
 import edu.wpi.first.wpilibj.AnalogEncoder;
+import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.controller.ProfiledPIDController;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
@@ -22,7 +23,7 @@ public class WaltonSwerveModule implements SwerveModule {
 
     private final CANSparkMax azimuthSparkMax;
     private final BaseTalon driveTalon;
-    private final AnalogEncoder azimuthEncoder;
+    private final DutyCycleEncoder azimuthEncoder;
     private final ProfiledPIDController azimuthController;
     private final double azimuthCountsPerRev;
     private final double driveCountsPerRev;
@@ -141,8 +142,12 @@ public class WaltonSwerveModule implements SwerveModule {
         return driveTalon;
     }
 
-    private int getAzimuthAbsoluteEncoderCounts() {
-        return ((int)azimuthEncoder.get() & 0xFFF) + azimuthPositionOffsetCounts;
+    public double getAzimuthClosedLoopError() {
+        return azimuthController.getPositionError();
+    }
+
+    public int getAzimuthAbsoluteEncoderCounts() {
+        return (4096 - ((int)azimuthEncoder.getDistance())) + azimuthPositionOffsetCounts;
     }
 
     public Rotation2d getAzimuthRotation2d() {
@@ -202,7 +207,7 @@ public class WaltonSwerveModule implements SwerveModule {
         private final int azimuthCountsPerRev = kDefaultTalonSRXCountsPerRev;
         private CANSparkMax azimuthSparkMax;
         private BaseTalon driveTalon;
-        private AnalogEncoder azimuthEncoder;
+        private DutyCycleEncoder azimuthEncoder;
         private ProfiledPIDController azimuthController;
         private double driveGearRatio;
         private double wheelDiameterInches;
@@ -233,7 +238,7 @@ public class WaltonSwerveModule implements SwerveModule {
             throw new IllegalArgumentException("expect drive talon is TalonFX or TalonSRX");
         }
 
-        public Builder azimuthEncoder(AnalogEncoder azimuthEncoder) {
+        public Builder azimuthEncoder(DutyCycleEncoder azimuthEncoder) {
             this.azimuthEncoder = azimuthEncoder;
             return this;
         }

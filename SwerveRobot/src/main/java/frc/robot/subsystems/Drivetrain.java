@@ -5,8 +5,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
-import edu.wpi.first.wpilibj.AnalogEncoder;
-import edu.wpi.first.wpilibj.AnalogInput;
+import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.SlewRateLimiter;
 import edu.wpi.first.wpilibj.controller.ProfiledPIDController;
@@ -14,6 +13,7 @@ import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.geometry.Translation2d;
 import edu.wpi.first.wpilibj.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.commands.DriveCommand;
@@ -24,6 +24,8 @@ import edu.wpi.first.wpilibj.SlewRateLimiter;
 import static frc.robot.Constants.SwerveDriveConfig.*;
 
 public class Drivetrain extends SubsystemBase {
+
+    private boolean loadedAzimuthReference = false;
 
     private final SwerveDrive swerveDrive;
     private final AHRS ahrs = new AHRS(SPI.Port.kMXP);
@@ -47,37 +49,57 @@ public class Drivetrain extends SubsystemBase {
         vrRateLimiter = new SlewRateLimiter(kMaxOmega);    //max rotational velocity rate
 
         for (int i = 0; i < 4; i++) {
-            var azimuthSparkMax = new CANSparkMax(i, CANSparkMaxLowLevel.MotorType.kBrushless);
+            var azimuthSparkMax = new CANSparkMax(i + 1, CANSparkMaxLowLevel.MotorType.kBrushless);
             azimuthSparkMax.restoreFactoryDefaults();
             azimuthSparkMax.enableVoltageCompensation(12.0);
             azimuthSparkMax.setSmartCurrentLimit(80);
             azimuthSparkMax.setOpenLoopRampRate(0.0);
             azimuthSparkMax.setIdleMode(CANSparkMax.IdleMode.kCoast);
+            azimuthSparkMax.setInverted(true);
 
-            var driveTalon = new TalonFX(i + 10);
+            var driveTalon = new TalonFX(i + 11);
             driveTalon.configFactoryDefault(kTalonConfigTimeout);
             driveTalon.configAllSettings(getDriveTalonConfig(), kTalonConfigTimeout);
             driveTalon.enableVoltageCompensation(true);
             driveTalon.setNeutralMode(NeutralMode.Brake);
 
+            DutyCycleEncoder encoder = new DutyCycleEncoder(i);
+            encoder.setDistancePerRotation(4096.0);
+
+            // TODO: Add trajectory command!
+
+            // TODO: Maybe play with slew rate limiter/linear curve
+
+            // 300 sensor units / 1 ms ->
+            // TODO: Add d term
+            ProfiledPIDController controller = new ProfiledPIDController(
+                    /* 20.0 / 1023.0 */ 10.0 / 4096.0, 0.0, 0.0,
+                    new TrapezoidProfile.Constraints(800 * 10, 1000 * 10)
+            );
+
+            controller.setTolerance(30.0);
+            controller.enableContinuousInput(-90 * 4096.0, 90 * 4096.0);
+
             swerveModules[i] =
                     moduleBuilder
                             .azimuthSparkMax(azimuthSparkMax)
                             .driveTalon(driveTalon)
-                            .azimuthEncoder(new AnalogEncoder(new AnalogInput(i)))
-                            .azimuthController(new ProfiledPIDController(
-                                    1.0, 0.0, 0.0,
-                                    new TrapezoidProfile.Constraints(100, 100)
-                            ))
+                            .azimuthEncoder(encoder)
+                            .azimuthController(controller)
                             .wheelLocationMeters(wheelLocations[i])
                             .build();
 
             swerveModules[i].loadAndSetAzimuthZeroReference();
+            loadedAzimuthReference = true;
         }
 
         swerveDrive = new SwerveDrive(ahrs, swerveModules);
         resetHeading();
-//        setHeadingOffset(Rotation2d.fromDegrees(180));
+        setHeadingOffset(Rotation2d.fromDegrees(180));
+
+//        for (SwerveModule module : getSwerveModules()) {
+//            module.storeAzimuthZeroReference();
+//        }
     }
 
     /**
@@ -121,9 +143,22 @@ public class Drivetrain extends SubsystemBase {
     public void periodic() {
         swerveDrive.periodic();
 
-        for (SwerveModule module : getSwerveModules()) {
-            ((WaltonSwerveModule) module).periodic();
+        // TODO: Make custom WaltonSwerveDrive class
+        if (loadedAzimuthReference) {
+            for (SwerveModule module : getSwerveModules()) {
+                ((WaltonSwerveModule) module).periodic();
+            }
         }
+
+        SmartDashboard.putNumber("Left front", ((WaltonSwerveModule)getSwerveModules()[0]).getAzimuthAbsoluteEncoderCounts());
+        SmartDashboard.putNumber("Right front", ((WaltonSwerveModule)getSwerveModules()[1]).getAzimuthAbsoluteEncoderCounts());
+        SmartDashboard.putNumber("Left back", ((WaltonSwerveModule)getSwerveModules()[2]).getAzimuthAbsoluteEncoderCounts());
+        SmartDashboard.putNumber("Right back", ((WaltonSwerveModule)getSwerveModules()[3]).getAzimuthAbsoluteEncoderCounts());
+
+        SmartDashboard.putNumber("Left front error", ((WaltonSwerveModule)getSwerveModules()[0]).getAzimuthClosedLoopError());
+        SmartDashboard.putNumber("Right front error", ((WaltonSwerveModule)getSwerveModules()[1]).getAzimuthClosedLoopError());
+        SmartDashboard.putNumber("Left back error", ((WaltonSwerveModule)getSwerveModules()[2]).getAzimuthClosedLoopError());
+        SmartDashboard.putNumber("Right back error", ((WaltonSwerveModule)getSwerveModules()[3]).getAzimuthClosedLoopError());
     }
     //Method necessary for driveRotationVelocityMode translation
     static public Translation2d scaleTranslationInput(Translation2d input) {

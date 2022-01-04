@@ -42,16 +42,17 @@ public class DriveCommand extends CommandBase {
 
     @Override
     public void execute(){
-        double forward = forwardScale.apply(leftJoystick.getY());
-        double strafe = strafeScale.apply(leftJoystick.getX());
-        double yaw = yawScale.apply(rightJoystick.getX());
+        double forward = forwardScale.apply(-leftJoystick.getY());
+        double strafe = strafeScale.apply(-leftJoystick.getX());
+        double yaw = yawScale.apply(rightJoystick.getTwist());
         double vx = forward * kMaxSpeedMetersPerSecond;
         double vy = strafe * kMaxSpeedMetersPerSecond;
         double omega = yaw * kMaxOmega;
-
-
+        
         drivetrain.drive(vx, vy, omega);
         //drivetrain.driveRotationVelocityMode(vx,vy,omega);    //slewratelimiter
+
+        drivetrain.move(vx, vy, omega, true);
     }
 
     @Override

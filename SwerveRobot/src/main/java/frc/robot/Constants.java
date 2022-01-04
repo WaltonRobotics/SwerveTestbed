@@ -26,8 +26,9 @@ public class Constants {
         // From: https://github.com/strykeforce/axis-config/
         public static final double kMaxSpeedMetersPerSecond = 3.889;
 
-        public static final double kDistanceBetweenWheelsWidthWiseMeters = Units.inchesToMeters(18.375);
-        public static final double kDistanceBetweenWheelsLengthWiseMeters = Units.inchesToMeters(20.0);
+        public static final double kDistanceBetweenWheelsWidthWiseMeters = Units.inchesToMeters(15.0 + 1.0 / 16.0 + 1.761652 * 2.0);
+        public static final double kDistanceBetweenWheelsLengthWiseMeters = Units.inchesToMeters(16.0 + 17.0 / 32.0 + 1.761652 * 2.0);
+        //Luke says hi
 
         public static final double kMaxOmega =
                 (kMaxSpeedMetersPerSecond / Math.hypot(kDistanceBetweenWheelsLengthWiseMeters / 2.0,
