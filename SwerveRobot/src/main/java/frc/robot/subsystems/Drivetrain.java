@@ -8,6 +8,7 @@ import com.revrobotics.CANSparkMaxLowLevel;
 import edu.wpi.first.wpilibj.AnalogEncoder;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.SlewRateLimiter;
 import edu.wpi.first.wpilibj.controller.ProfiledPIDController;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
@@ -15,16 +16,21 @@ import edu.wpi.first.wpilibj.geometry.Translation2d;
 import edu.wpi.first.wpilibj.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.wpilibj.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.commands.DriveCommand;
 import frc.robot.utils.WaltonSwerveModule;
 import org.strykeforce.swerve.SwerveDrive;
 import org.strykeforce.swerve.SwerveModule;
-
+import edu.wpi.first.wpilibj.SlewRateLimiter;
 import static frc.robot.Constants.SwerveDriveConfig.*;
 
 public class Drivetrain extends SubsystemBase {
 
     private final SwerveDrive swerveDrive;
     private final AHRS ahrs = new AHRS(SPI.Port.kMXP);
+
+    private final SlewRateLimiter vxRateLimiter;
+    private final SlewRateLimiter vyRateLimiter;
+    private final SlewRateLimiter vrRateLimiter;
 
     public Drivetrain() {
         var moduleBuilder =
@@ -35,6 +41,10 @@ public class Drivetrain extends SubsystemBase {
 
         WaltonSwerveModule[] swerveModules = new WaltonSwerveModule[4];
         Translation2d[] wheelLocations = getWheelLocationMeters();
+
+        vxRateLimiter = new SlewRateLimiter(kMaxSpeedMetersPerSecond);  //max translational velocity rate
+        vyRateLimiter = new SlewRateLimiter(kMaxSpeedMetersPerSecond);
+        vrRateLimiter = new SlewRateLimiter(kMaxOmega);    //max rotational velocity rate
 
         for (int i = 0; i < 4; i++) {
             var azimuthSparkMax = new CANSparkMax(i, CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -115,6 +125,14 @@ public class Drivetrain extends SubsystemBase {
             ((WaltonSwerveModule) module).periodic();
         }
     }
+    //Method necessary for driveRotationVelocityMode translation
+    static public Translation2d scaleTranslationInput(Translation2d input) {
+        double mag = input.getNorm();
+        final double scale = 1.35;
+        mag = Math.pow(mag, scale);
+        final Rotation2d rotation = new Rotation2d(input.getX(), input.getY());
+        return new Translation2d(rotation.getCos() * mag, rotation.getSin() * mag);
+    }
 
     /**
      * Drive the robot with given x, y, and rotational velocities with open-loop velocity control.
@@ -122,6 +140,16 @@ public class Drivetrain extends SubsystemBase {
     public void drive(
             double vxMetersPerSecond, double vyMetersPerSecond, double omegaRadiansPerSecond) {
         swerveDrive.drive(vxMetersPerSecond, vyMetersPerSecond, omegaRadiansPerSecond, true);
+    }
+
+    public void driveRotationVelocityMode(double dx, double dy, double dr) {
+        Translation2d translation = Drivetrain.scaleTranslationInput(new Translation2d(dx, dy));
+
+        dx = vxRateLimiter.calculate(translation.getX() * kMaxSpeedMetersPerSecond);
+        dy = vyRateLimiter.calculate(translation.getY() * kMaxSpeedMetersPerSecond);
+        dr = vrRateLimiter.calculate(dr * kMaxOmega);
+
+        swerveDrive.drive(dx, dy, dr, true);
     }
 
     /**
