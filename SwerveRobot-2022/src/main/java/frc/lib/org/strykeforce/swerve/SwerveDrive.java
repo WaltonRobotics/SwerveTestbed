@@ -254,7 +254,7 @@ public class SwerveDrive {
             : new ChassisSpeeds(vxMetersPerSecond, vyMetersPerSecond, omegaRadiansPerSecond);
 
     var swerveModuleStates = kinematics.toSwerveModuleStates(chassisSpeeds);
-    SwerveDriveKinematics.normalizeWheelSpeeds(swerveModuleStates, maxSpeedMetersPerSecond);
+    SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, maxSpeedMetersPerSecond);
     return swerveModuleStates;
   }
 
@@ -264,7 +264,7 @@ public class SwerveDrive {
    * @param desiredStates the desired swerve module states
    */
   public void setModuleStates(SwerveModuleState[] desiredStates) {
-    SwerveDriveKinematics.normalizeWheelSpeeds(desiredStates, maxSpeedMetersPerSecond);
+    SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, maxSpeedMetersPerSecond);
     for (int i = 0; i < 4; i++) {
       swerveModules[i].setDesiredState(desiredStates[i], true);
     }

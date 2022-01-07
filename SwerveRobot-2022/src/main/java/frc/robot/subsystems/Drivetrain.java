@@ -71,7 +71,7 @@ public class Drivetrain extends SubsystemBase {
             // 300 sensor units / 1 ms ->
             // TODO: Add d term
             ProfiledPIDController controller = new ProfiledPIDController(
-                    /* 20.0 / 1023.0 */ 10.0 / 4096.0, 0.0, 0.0,
+                    /* 20.0 / 1023.0 */ 20.0 / 4096.0, 0.0, 0.0,
                     new TrapezoidProfile.Constraints(800 * 10, 1000 * 10)
             );
 
@@ -95,9 +95,9 @@ public class Drivetrain extends SubsystemBase {
         resetHeading();
         setHeadingOffset(Rotation2d.fromDegrees(180));
 
-        for (SwerveModule module : getSwerveModules()) {
-            module.storeAzimuthZeroReference();
-        }
+//        for (SwerveModule module : getSwerveModules()) {
+//            module.storeAzimuthZeroReference();
+//        }
     }
 
     /**
@@ -139,12 +139,13 @@ public class Drivetrain extends SubsystemBase {
      */
     @Override
     public void periodic() {
-//        swerveDrive.periodic();
+        swerveDrive.periodic();
 
         // TODO: Make custom WaltonSwerveDrive class
         if (loadedAzimuthReference) {
             for (SwerveModule module : getSwerveModules()) {
-//                ((WaltonSwerveModule) module).periodic();
+//                ((WaltonSwerveModule) module).setAzimuthRotation2d(Rotation2d.fromDegrees(45));
+                ((WaltonSwerveModule) module).periodic();
             }
         }
 
@@ -182,7 +183,7 @@ public class Drivetrain extends SubsystemBase {
         dy = vyRateLimiter.calculate(translation.getY() * kMaxSpeedMetersPerSecond);
         dr = vrRateLimiter.calculate(dr * kMaxOmega);
 
-        swerveDrive.drive(dx, dy, dr, true);
+        swerveDrive.move(dx, dy, dr, true);
     }
 
     /**

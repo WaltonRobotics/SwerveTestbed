@@ -43,7 +43,7 @@ public class DriveCommand extends CommandBase {
 
         //drivetrain.driveRotationVelocityMode(vx,vy,omega);    //slewratelimiter
 
-        drivetrain.move(vx, vy, omega, true);
+//        drivetrain.move(vx, vy, omega, true);
     }
 
     @Override
