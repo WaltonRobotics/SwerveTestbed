@@ -37,8 +37,8 @@ public class Constants {
                         / 2.0; // wheel locations below
 
         // From: https://github.com/strykeforce/axis-config/
-        static final double kDriveMotorOutputGear = 22;
-        static final double kDriveInputGear = 48;
+        static final double kDriveMotorOutputGear = 12;
+        static final double kDriveInputGear = 21;
         static final double kBevelInputGear = 15;
         static final double kBevelOutputGear = 45;
         public static final int kTalonConfigTimeout = 10; // ms

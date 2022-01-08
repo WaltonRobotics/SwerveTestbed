@@ -150,6 +150,14 @@ public class WaltonSwerveModule implements SwerveModule {
         return (4096 - ((int)azimuthEncoder.getDistance())) + azimuthPositionOffsetCounts;
     }
 
+    public void resetRelativeEncoder() {
+        azimuthSparkMax.getEncoder().setPosition(0.0);
+    }
+
+    public double getAzimuthRelativeEncoderCounts() {
+        return azimuthSparkMax.getEncoder().getPosition();
+    }
+
     public Rotation2d getAzimuthRotation2d() {
         double azimuthCounts = getAzimuthAbsoluteEncoderCounts();
         double radians = 2.0 * Math.PI * azimuthCounts / azimuthCountsPerRev;

@@ -41,9 +41,7 @@ public class DriveCommand extends CommandBase {
         double vy = strafe * kMaxSpeedMetersPerSecond;
         double omega = yaw * kMaxOmega;
 
-        //drivetrain.driveRotationVelocityMode(vx,vy,omega);    //slewratelimiter
-
-//        drivetrain.move(vx, vy, omega, true);
+        drivetrain.move(vx, vy, omega, true);
     }
 
     @Override

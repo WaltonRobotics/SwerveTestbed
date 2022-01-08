@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.kauailabs.navx.frc.AHRS;
@@ -61,6 +62,10 @@ public class Drivetrain extends SubsystemBase {
             driveTalon.enableVoltageCompensation(true);
             driveTalon.setNeutralMode(NeutralMode.Brake);
 
+            if (i == 3) {
+                driveTalon.setInverted(true);
+            }
+
             DutyCycleEncoder encoder = new DutyCycleEncoder(i);
             encoder.setDistancePerRotation(4096.0);
 
@@ -71,7 +76,7 @@ public class Drivetrain extends SubsystemBase {
             // 300 sensor units / 1 ms ->
             // TODO: Add d term
             ProfiledPIDController controller = new ProfiledPIDController(
-                    /* 20.0 / 1023.0 */ 20.0 / 4096.0, 0.0, 0.0,
+                    /* 20.0 / 1023.0 */ 10.0 / 4096.0, 0.0, 0.0,
                     new TrapezoidProfile.Constraints(800 * 10, 1000 * 10)
             );
 
@@ -144,21 +149,29 @@ public class Drivetrain extends SubsystemBase {
         // TODO: Make custom WaltonSwerveDrive class
         if (loadedAzimuthReference) {
             for (SwerveModule module : getSwerveModules()) {
-//                ((WaltonSwerveModule) module).setAzimuthRotation2d(Rotation2d.fromDegrees(45));
+//                ((WaltonSwerveModule) module).getDriveTalon().set(ControlMode.PercentOutput, 0.25);
+//                ((WaltonSwerveModule) module).setAzimuthRotation2d(Rotation2d.fromDegrees(0));
                 ((WaltonSwerveModule) module).periodic();
             }
         }
 
-        SmartDashboard.putNumber("Left front", ((WaltonSwerveModule)getSwerveModules()[0]).getAzimuthAbsoluteEncoderCounts());
-        SmartDashboard.putNumber("Right front", ((WaltonSwerveModule)getSwerveModules()[1]).getAzimuthAbsoluteEncoderCounts());
-        SmartDashboard.putNumber("Left back", ((WaltonSwerveModule)getSwerveModules()[2]).getAzimuthAbsoluteEncoderCounts());
-        SmartDashboard.putNumber("Right back", ((WaltonSwerveModule)getSwerveModules()[3]).getAzimuthAbsoluteEncoderCounts());
+        SmartDashboard.putNumber("Left front", ((WaltonSwerveModule)getSwerveModules()[0]).getAzimuthRelativeEncoderCounts());
+        SmartDashboard.putNumber("Right front", ((WaltonSwerveModule)getSwerveModules()[1]).getAzimuthRelativeEncoderCounts());
+        SmartDashboard.putNumber("Left back", ((WaltonSwerveModule)getSwerveModules()[2]).getAzimuthRelativeEncoderCounts());
+        SmartDashboard.putNumber("Right back", ((WaltonSwerveModule)getSwerveModules()[3]).getAzimuthRelativeEncoderCounts());
 
         SmartDashboard.putNumber("Left front error", ((WaltonSwerveModule)getSwerveModules()[0]).getAzimuthClosedLoopError());
         SmartDashboard.putNumber("Right front error", ((WaltonSwerveModule)getSwerveModules()[1]).getAzimuthClosedLoopError());
         SmartDashboard.putNumber("Left back error", ((WaltonSwerveModule)getSwerveModules()[2]).getAzimuthClosedLoopError());
         SmartDashboard.putNumber("Right back error", ((WaltonSwerveModule)getSwerveModules()[3]).getAzimuthClosedLoopError());
     }
+
+    public void resetEncoders() {
+        for (SwerveModule module : getSwerveModules()) {
+            ((WaltonSwerveModule) module).resetRelativeEncoder();
+        }
+    }
+
     //Method necessary for driveRotationVelocityMode translation
     static public Translation2d scaleTranslationInput(Translation2d input) {
         double mag = input.getNorm();

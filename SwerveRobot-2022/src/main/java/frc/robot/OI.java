@@ -20,7 +20,8 @@ public class OI {
     static {
         resetDrivetrainButton.whenPressed(new SequentialCommandGroup(
                 new InstantCommand(() -> drivetrain.resetHeading()),
-                new InstantCommand(() -> System.out.println("Resetting drivetrain"))
+                new InstantCommand(() -> System.out.println("Resetting drivetrain")),
+                new InstantCommand(() -> drivetrain.resetEncoders())
         ));
     }
 
