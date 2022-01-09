@@ -6,6 +6,8 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkMaxPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -52,7 +54,38 @@ public class Drivetrain extends SubsystemBase {
             azimuthSparkMax.setIdleMode(CANSparkMax.IdleMode.kCoast);
             azimuthSparkMax.setInverted(true);
 
+            RelativeEncoder azimuthRelativeEncoder = azimuthSparkMax.getEncoder();
+            SparkMaxPIDController azimuthPID = azimuthSparkMax.getPIDController();
 
+            double relativeEncoderDegreesPerTick = 1.0 / (5.33 * 12.0);
+            azimuthRelativeEncoder.setPositionConversionFactor(relativeEncoderDegreesPerTick);
+            azimuthRelativeEncoder.setVelocityConversionFactor(relativeEncoderDegreesPerTick);
+
+            // Smart Motion Configuration
+            azimuthPID.setP(0.00005);
+            azimuthPID.setI(0.000001);
+            azimuthPID.setD(0.0);
+            azimuthPID.setIZone(0.0);
+            azimuthPID.setFF(0.000156);
+            azimuthPID.setOutputRange(-1.0, 1.0);
+
+            /**
+             * Smart Motion coefficients are set on a SparkMaxPIDController object
+             *
+             * - setSmartMotionMaxVelocity() will limit the velocity in RPM of
+             * the pid controller in Smart Motion mode
+             * - setSmartMotionMinOutputVelocity() will put a lower bound in
+             * RPM of the pid controller in Smart Motion mode
+             * - setSmartMotionMaxAccel() will limit the acceleration in RPM^2
+             * of the pid controller in Smart Motion mode
+             * - setSmartMotionAllowedClosedLoopError() will set the max allowed
+             * error for the pid controller in Smart Motion mode
+             */
+            int smartMotionSlot = 0;
+            azimuthPID.setSmartMotionMaxVelocity(2000, smartMotionSlot);
+            azimuthPID.setSmartMotionMinOutputVelocity(0, smartMotionSlot);
+            azimuthPID.setSmartMotionMaxAccel(1500, smartMotionSlot);
+            azimuthPID.setSmartMotionAllowedClosedLoopError(0, smartMotionSlot);
 
             var driveTalon = new TalonFX(i + 11);
             driveTalon.configFactoryDefault(kTalonConfigTimeout);
@@ -64,29 +97,22 @@ public class Drivetrain extends SubsystemBase {
                 driveTalon.setInverted(true);
             }
 
-            DutyCycleEncoder encoder = new DutyCycleEncoder(i);
-            encoder.setDistancePerRotation(4096.0);
+            DutyCycleEncoder azimuthAbsoluteEncoder = new DutyCycleEncoder(i);
+            azimuthAbsoluteEncoder.setDistancePerRotation(4096.0);
 
-            // TODO: Add trajectory command!
-
-            // TODO: Maybe play with slew rate limiter/linear curve
-
-            // 300 sensor units / 1 ms ->
-            // TODO: Add d term
-            ProfiledPIDController controller = new ProfiledPIDController(
-                    /* 20.0 / 1023.0 */ 10.0 / 4096.0, 0.0, 0.0,
-                    new TrapezoidProfile.Constraints(800 * 10, 1000 * 10)
-            );
-
-            controller.setTolerance(30.0);
-            controller.enableContinuousInput(-90 * 4096.0, 90 * 4096.0);
+//            ProfiledPIDController controller = new ProfiledPIDController(
+//                    /* 20.0 / 1023.0 */ 10.0 / 4096.0, 0.0, 0.0,
+//                    new TrapezoidProfile.Constraints(800 * 10, 1000 * 10)
+//            );
+//
+//            controller.setTolerance(30.0);
+//            controller.enableContinuousInput(-90 * 4096.0, 90 * 4096.0);
 
             swerveModules[i] =
                     moduleBuilder
                             .azimuthSparkMax(azimuthSparkMax)
                             .driveTalon(driveTalon)
-                            .azimuthEncoder(encoder)
-                            .azimuthController(controller)
+                            .azimuthEncoder(azimuthAbsoluteEncoder)
                             .wheelLocationMeters(wheelLocations[i])
                             .build();
 
@@ -160,12 +186,6 @@ public class Drivetrain extends SubsystemBase {
     @Override
     public void periodic() {
         swerveDrive.periodic();
-
-        if (loadedAzimuthReference) {
-            for (SwerveModule module : getSwerveModules()) {
-                ((WaltonSwerveModule) module).periodic();
-            }
-        }
 
         SmartDashboard.putNumber(DRIVETRAIN_LEFT_FRONT_ABSOLUTE_POSITION, ((WaltonSwerveModule)getSwerveModules()[0]).getAzimuthAbsoluteEncoderCounts());
         SmartDashboard.putNumber(DRIVETRAIN_RIGHT_FRONT_ABSOLUTE_POSITION, ((WaltonSwerveModule)getSwerveModules()[1]).getAzimuthAbsoluteEncoderCounts());

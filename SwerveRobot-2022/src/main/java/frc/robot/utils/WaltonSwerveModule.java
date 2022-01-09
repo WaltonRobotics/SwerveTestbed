@@ -5,10 +5,8 @@ import com.ctre.phoenix.motorcontrol.can.BaseTalon;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.revrobotics.CANSparkMax;
-import edu.wpi.first.wpilibj.AnalogEncoder;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.Preferences;
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -24,8 +22,7 @@ public class WaltonSwerveModule implements SwerveModule {
     private final CANSparkMax azimuthSparkMax;
     private final BaseTalon driveTalon;
     private final DutyCycleEncoder azimuthEncoder;
-    private final ProfiledPIDController azimuthController;
-    private final double azimuthCountsPerRev;
+    private final double azimuthAbsoluteCountsPerRev;
     private final double driveCountsPerRev;
     private final double driveGearRatio;
     private final double wheelCircumferenceMeters;
@@ -34,7 +31,6 @@ public class WaltonSwerveModule implements SwerveModule {
     private final Translation2d wheelLocationMeters;
 
     private double currentTargetPositionCounts;
-    private int azimuthPositionOffsetCounts;
 
     private Rotation2d previousAngle = new Rotation2d();
 
@@ -42,8 +38,7 @@ public class WaltonSwerveModule implements SwerveModule {
         azimuthSparkMax = builder.azimuthSparkMax;
         driveTalon = builder.driveTalon;
         azimuthEncoder = builder.azimuthEncoder;
-        azimuthController = builder.azimuthController;
-        azimuthCountsPerRev = builder.azimuthCountsPerRev;
+        azimuthAbsoluteCountsPerRev = builder.azimuthAbsoluteCountsPerRev;
         driveCountsPerRev = builder.driveCountsPerRev;
         driveGearRatio = builder.driveGearRatio;
         wheelCircumferenceMeters = Math.PI * Units.inchesToMeters(builder.wheelDiameterInches);
@@ -124,14 +119,13 @@ public class WaltonSwerveModule implements SwerveModule {
         }
         DebuggingLog.getInstance().getLogger().log(Level.INFO, "swerve module {0}: loaded azimuth zero reference = {1}", new Object[]{index, reference});
 
-        azimuthPositionOffsetCounts = -reference;
-        azimuthController.reset(getAzimuthAbsoluteEncoderCounts());
-    }
+        double azimuthAbsoluteCounts = getAzimuthAbsoluteEncoderCounts();
 
-    public void periodic() {
-        double output = azimuthController.calculate(getAzimuthAbsoluteEncoderCounts(), currentTargetPositionCounts);
+        double azimuthSetpoint = (azimuthAbsoluteCounts - reference) / azimuthAbsoluteCountsPerRev;
 
-        azimuthSparkMax.set(output);
+        azimuthSparkMax.getEncoder().setPosition(azimuthSetpoint);
+
+        azimuthSparkMax.getPIDController().setReference(azimuthSetpoint, CANSparkMax.ControlType.kSmartMotion);
     }
 
     public CANSparkMax getAzimuthSparkMax() {
@@ -147,7 +141,7 @@ public class WaltonSwerveModule implements SwerveModule {
     }
 
     public int getAzimuthAbsoluteEncoderCounts() {
-        return (4096 - ((int)azimuthEncoder.getDistance())) + azimuthPositionOffsetCounts;
+        return (4096 - ((int)azimuthEncoder.getDistance()));
     }
 
     public double getAzimuthRelativeEncoderCounts() {
@@ -155,16 +149,16 @@ public class WaltonSwerveModule implements SwerveModule {
     }
 
     public Rotation2d getAzimuthRotation2d() {
-        double azimuthCounts = getAzimuthAbsoluteEncoderCounts();
-        double radians = 2.0 * Math.PI * azimuthCounts / azimuthCountsPerRev;
+        double azimuthCounts = getAzimuthRelativeEncoderCounts();
+        double radians = 2.0 * Math.PI * azimuthCounts;
         return new Rotation2d(radians);
     }
 
     public void setAzimuthRotation2d(Rotation2d angle) {
-        double countsBefore = getAzimuthAbsoluteEncoderCounts();
-        double countsFromAngle = angle.getRadians() / (2.0 * Math.PI) * azimuthCountsPerRev;
-        double countsDelta = Math.IEEEremainder(countsFromAngle - countsBefore, azimuthCountsPerRev);
-        currentTargetPositionCounts = countsBefore + countsDelta;
+        double countsBefore = getAzimuthRelativeEncoderCounts();
+        double countsFromAngle = angle.getRadians() / (2.0 * Math.PI);
+        double countsDelta = Math.IEEEremainder(countsFromAngle - countsBefore, 1.0);
+        azimuthSparkMax.getPIDController().setReference(countsBefore + countsDelta, CANSparkMax.ControlType.kSmartMotion);
     }
 
     private double getDriveMetersPerSecond() {
@@ -208,11 +202,10 @@ public class WaltonSwerveModule implements SwerveModule {
 
         public static final int kDefaultTalonSRXCountsPerRev = 4096;
         public static final int kDefaultTalonFXCountsPerRev = 2048;
-        private final int azimuthCountsPerRev = kDefaultTalonSRXCountsPerRev;
+        private final int azimuthAbsoluteCountsPerRev = kDefaultTalonSRXCountsPerRev;
         private CANSparkMax azimuthSparkMax;
         private BaseTalon driveTalon;
         private DutyCycleEncoder azimuthEncoder;
-        private ProfiledPIDController azimuthController;
         private double driveGearRatio;
         private double wheelDiameterInches;
         private int driveCountsPerRev = kDefaultTalonFXCountsPerRev;
@@ -244,11 +237,6 @@ public class WaltonSwerveModule implements SwerveModule {
 
         public Builder azimuthEncoder(DutyCycleEncoder azimuthEncoder) {
             this.azimuthEncoder = azimuthEncoder;
-            return this;
-        }
-
-        public Builder azimuthController(ProfiledPIDController azimuthController) {
-            this.azimuthController = azimuthController;
             return this;
         }
 
@@ -306,15 +294,11 @@ public class WaltonSwerveModule implements SwerveModule {
                 throw new IllegalArgumentException("azimuth encoder must be set.");
             }
 
-            if (module.azimuthController == null) {
-                throw new IllegalArgumentException("azimuth controller must be set.");
-            }
-
             if (module.driveGearRatio <= 0) {
                 throw new IllegalArgumentException("drive gear ratio must be greater than zero.");
             }
 
-            if (module.azimuthCountsPerRev <= 0) {
+            if (module.azimuthAbsoluteCountsPerRev <= 0) {
                 throw new IllegalArgumentException(
                         "azimuth encoder counts per revolution must be greater than zero.");
             }
