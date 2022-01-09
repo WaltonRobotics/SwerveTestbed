@@ -68,8 +68,6 @@ dependencies {
     simulationRelease wpi.sim.enableRelease()
 
     testImplementation 'junit:junit:4.12'
-
-    implementation 'org.slf4j:slf4j-log4j12:1.7.29'
 }
 
 // Simulation configuration (e.g. environment variables).

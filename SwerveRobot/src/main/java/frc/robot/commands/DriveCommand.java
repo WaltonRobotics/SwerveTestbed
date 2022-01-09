@@ -1,12 +1,8 @@
 package frc.robot.commands;
 
-
-import edu.wpi.first.wpilibj.SlewRateLimiter;
-import edu.wpi.first.wpilibj.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.geometry.Translation2d;
+import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Drivetrain;
-import org.strykeforce.thirdcoast.util.ExpoScale;
+import frc.lib.org.strykeforce.thirdcoast.util.ExpoScale;
 
 import static frc.robot.Constants.SwerveDriveConfig.kMaxOmega;
 import static frc.robot.Constants.SwerveDriveConfig.kMaxSpeedMetersPerSecond;
@@ -28,16 +24,12 @@ public class DriveCommand extends CommandBase {
     private final ExpoScale strafeScale;
     private final ExpoScale yawScale;
 
-
     public DriveCommand() {
         addRequirements(drivetrain);
 
         forwardScale = new ExpoScale(FORWARD_DEADBAND, FORWARD_XPOSCALE);
         strafeScale = new ExpoScale(STRAFE_DEADBAND, STRAFE_XPOSCALE);
         yawScale = new ExpoScale(YAW_DEADBAND, YAW_XPOSCALE);
-
-
-
     }
 
     @Override
@@ -48,9 +40,6 @@ public class DriveCommand extends CommandBase {
         double vx = forward * kMaxSpeedMetersPerSecond;
         double vy = strafe * kMaxSpeedMetersPerSecond;
         double omega = yaw * kMaxOmega;
-        
-        drivetrain.drive(vx, vy, omega);
-        //drivetrain.driveRotationVelocityMode(vx,vy,omega);    //slewratelimiter
 
         drivetrain.move(vx, vy, omega, true);
     }
