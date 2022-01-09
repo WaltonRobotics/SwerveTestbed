@@ -1,6 +1,8 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -19,9 +21,8 @@ public class OI {
 
     static {
         resetDrivetrainButton.whenPressed(new SequentialCommandGroup(
-                new InstantCommand(() -> drivetrain.resetHeading()),
-                new InstantCommand(() -> System.out.println("Resetting drivetrain")),
-                new InstantCommand(() -> drivetrain.resetEncoders())
+                new InstantCommand(() -> drivetrain.reset()),
+                new InstantCommand(() -> System.out.println("Reset drivetrain"))
         ));
     }
 

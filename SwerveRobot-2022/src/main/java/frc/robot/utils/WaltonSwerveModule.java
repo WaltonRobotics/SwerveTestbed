@@ -142,16 +142,12 @@ public class WaltonSwerveModule implements SwerveModule {
         return driveTalon;
     }
 
-    public double getAzimuthClosedLoopError() {
-        return azimuthController.getPositionError();
+    public double getDriveVelocityError() {
+        return driveTalon.getClosedLoopError();
     }
 
     public int getAzimuthAbsoluteEncoderCounts() {
         return (4096 - ((int)azimuthEncoder.getDistance())) + azimuthPositionOffsetCounts;
-    }
-
-    public void resetRelativeEncoder() {
-        azimuthSparkMax.getEncoder().setPosition(0.0);
     }
 
     public double getAzimuthRelativeEncoderCounts() {

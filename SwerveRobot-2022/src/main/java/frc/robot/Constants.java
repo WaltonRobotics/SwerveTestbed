@@ -77,4 +77,33 @@ public class Constants {
         }
     }
 
+    public static final class SmartDashboardKeys {
+
+        public static final String DRIVETRAIN_SAVE_CURRENT_AZIMUTH_ZERO_KEY = "Drivetrain/Save Current Azimuth Zero";
+        public static final String DRIVETRAIN_ROTATE_MODULES_TO_ANGLE_KEY = "Drivetrain/Rotate Modules To Angle";
+
+        public static final String DRIVETRAIN_SETPOINT_ANGLE_DEGREES = "Drivetrain/Setpoint Angle Degrees";
+
+        public static final String DRIVETRAIN_LEFT_FRONT_ABSOLUTE_POSITION = "Drivetrain/Left Front Absolute Counts";
+        public static final String DRIVETRAIN_RIGHT_FRONT_ABSOLUTE_POSITION = "Drivetrain/Right Front Absolute Counts";
+        public static final String DRIVETRAIN_LEFT_REAR_ABSOLUTE_POSITION = "Drivetrain/Left Rear Absolute Counts";
+        public static final String DRIVETRAIN_RIGHT_REAR_ABSOLUTE_POSITION = "Drivetrain/Right Rear Absolute Counts";
+
+        public static final String DRIVETRAIN_LEFT_FRONT_RELATIVE_POSITION = "Drivetrain/Left Front Relative Counts";
+        public static final String DRIVETRAIN_RIGHT_FRONT_RELATIVE_POSITION = "Drivetrain/Right Front Relative Counts";
+        public static final String DRIVETRAIN_LEFT_REAR_RELATIVE_POSITION = "Drivetrain/Left Rear Relative Counts";
+        public static final String DRIVETRAIN_RIGHT_REAR_RELATIVE_POSITION = "Drivetrain/Right Rear Relative Counts";
+
+        public static final String DRIVETRAIN_LEFT_FRONT_ANGLE_DEGREES = "Drivetrain/Left Front Angle Degrees";
+        public static final String DRIVETRAIN_RIGHT_FRONT_ANGLE_DEGREES = "Drivetrain/Right Front Angle Degrees";
+        public static final String DRIVETRAIN_LEFT_REAR_ANGLE_DEGREES = "Drivetrain/Left Rear Angle Degrees";
+        public static final String DRIVETRAIN_RIGHT_REAR_ANGLE_DEGREES = "Drivetrain/Right Rear Angle Degrees";
+
+        public static final String DRIVETRAIN_LEFT_FRONT_VELOCITY_ERROR = "Drivetrain/Left Front Velocity Error";
+        public static final String DRIVETRAIN_RIGHT_FRONT_VELOCITY_ERROR = "Drivetrain/Right Front Velocity Error";
+        public static final String DRIVETRAIN_LEFT_REAR_VELOCITY_ERROR = "Drivetrain/Left Rear Velocity Error";
+        public static final String DRIVETRAIN_RIGHT_REAR_VELOCITY_ERROR = "Drivetrain/Right Rear Velocity Error";
+
+    }
+
 }

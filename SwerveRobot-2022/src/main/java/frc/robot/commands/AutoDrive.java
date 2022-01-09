@@ -13,7 +13,7 @@ public class AutoDrive extends CommandBase {
 
     @Override
     public void execute() {
-        drivetrain.move(-kMaxSpeedMetersPerSecond * 0.25, 0.0, 0.0, false);
+        drivetrain.move(-kMaxSpeedMetersPerSecond * 0.25, 0.0, 0.0, true);
     }
 
     @Override
