@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -30,7 +31,7 @@ import static frc.robot.Constants.SwerveDriveConfig.*;
 
 public class Drivetrain extends SubsystemBase {
 
-    private boolean loadedAzimuthReference = false;
+    private Field2d field = new Field2d();
 
     private final SwerveDrive swerveDrive;
     private final AHRS ahrs = new AHRS(SPI.Port.kMXP);
@@ -117,7 +118,6 @@ public class Drivetrain extends SubsystemBase {
                             .build();
 
             swerveModules[i].loadAndSetAzimuthZeroReference();
-            loadedAzimuthReference = true;
         }
 
         swerveDrive = new SwerveDrive(ahrs, swerveModules);
@@ -129,6 +129,8 @@ public class Drivetrain extends SubsystemBase {
 
         SmartDashboard.putData(DRIVETRAIN_ROTATE_MODULES_TO_ANGLE_KEY,
                 new RotateModulesToAngle());
+
+        SmartDashboard.putData("Field", field);
     }
 
     public void saveCurrentPositionsAsAzimuthZeros() {
@@ -167,7 +169,7 @@ public class Drivetrain extends SubsystemBase {
      *
      * @param pose the current pose
      */
-    public void resetOdometry(Pose2d pose) {
+    public void resetPose(Pose2d pose) {
         swerveDrive.resetOdometry(pose);
     }
 
@@ -186,6 +188,8 @@ public class Drivetrain extends SubsystemBase {
     @Override
     public void periodic() {
         swerveDrive.periodic();
+
+        field.setRobotPose(getPoseMeters());
 
         SmartDashboard.putNumber(DRIVETRAIN_LEFT_FRONT_ABSOLUTE_POSITION, ((WaltonSwerveModule)getSwerveModules()[0]).getAzimuthAbsoluteEncoderCounts());
         SmartDashboard.putNumber(DRIVETRAIN_RIGHT_FRONT_ABSOLUTE_POSITION, ((WaltonSwerveModule)getSwerveModules()[1]).getAzimuthAbsoluteEncoderCounts());

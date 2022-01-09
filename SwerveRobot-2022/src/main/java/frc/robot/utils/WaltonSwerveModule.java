@@ -136,6 +136,10 @@ public class WaltonSwerveModule implements SwerveModule {
         return driveTalon;
     }
 
+    public double getAzimuthPositionError() {
+        return getAzimuthRelativeEncoderCounts() - currentTargetPositionCounts;
+    }
+
     public double getDriveVelocityError() {
         return driveTalon.getClosedLoopError();
     }
@@ -158,7 +162,8 @@ public class WaltonSwerveModule implements SwerveModule {
         double countsBefore = getAzimuthRelativeEncoderCounts();
         double countsFromAngle = angle.getRadians() / (2.0 * Math.PI);
         double countsDelta = Math.IEEEremainder(countsFromAngle - countsBefore, 1.0);
-        azimuthSparkMax.getPIDController().setReference(countsBefore + countsDelta, CANSparkMax.ControlType.kSmartMotion);
+        currentTargetPositionCounts = countsBefore + countsDelta;
+        azimuthSparkMax.getPIDController().setReference(currentTargetPositionCounts, CANSparkMax.ControlType.kSmartMotion);
     }
 
     private double getDriveMetersPerSecond() {
