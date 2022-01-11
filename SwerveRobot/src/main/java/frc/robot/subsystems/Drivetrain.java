@@ -1,26 +1,29 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.SPI;
-import edu.wpi.first.wpilibj.SlewRateLimiter;
-import edu.wpi.first.wpilibj.controller.ProfiledPIDController;
-import edu.wpi.first.wpilibj.geometry.Pose2d;
-import edu.wpi.first.wpilibj.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.geometry.Translation2d;
-import edu.wpi.first.wpilibj.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.commands.DriveCommand;
+import frc.lib.org.strykeforce.swerve.SwerveDrive;
+import frc.lib.org.strykeforce.swerve.SwerveModule;
+import frc.robot.commands.RotateModulesToAngle;
 import frc.robot.utils.WaltonSwerveModule;
-import org.strykeforce.swerve.SwerveDrive;
-import org.strykeforce.swerve.SwerveModule;
-import edu.wpi.first.wpilibj.SlewRateLimiter;
+
+import static frc.robot.Constants.SmartDashboardKeys.*;
 import static frc.robot.Constants.SwerveDriveConfig.*;
 
 public class Drivetrain extends SubsystemBase {
@@ -29,10 +32,6 @@ public class Drivetrain extends SubsystemBase {
 
     private final SwerveDrive swerveDrive;
     private final AHRS ahrs = new AHRS(SPI.Port.kMXP);
-
-    private final SlewRateLimiter vxRateLimiter;
-    private final SlewRateLimiter vyRateLimiter;
-    private final SlewRateLimiter vrRateLimiter;
 
     public Drivetrain() {
         var moduleBuilder =
@@ -44,10 +43,6 @@ public class Drivetrain extends SubsystemBase {
         WaltonSwerveModule[] swerveModules = new WaltonSwerveModule[4];
         Translation2d[] wheelLocations = getWheelLocationMeters();
 
-        vxRateLimiter = new SlewRateLimiter(kMaxSpeedMetersPerSecond);  //max translational velocity rate
-        vyRateLimiter = new SlewRateLimiter(kMaxSpeedMetersPerSecond);
-        vrRateLimiter = new SlewRateLimiter(kMaxOmega);    //max rotational velocity rate
-
         for (int i = 0; i < 4; i++) {
             var azimuthSparkMax = new CANSparkMax(i + 1, CANSparkMaxLowLevel.MotorType.kBrushless);
             azimuthSparkMax.restoreFactoryDefaults();
@@ -57,11 +52,17 @@ public class Drivetrain extends SubsystemBase {
             azimuthSparkMax.setIdleMode(CANSparkMax.IdleMode.kCoast);
             azimuthSparkMax.setInverted(true);
 
+
+
             var driveTalon = new TalonFX(i + 11);
             driveTalon.configFactoryDefault(kTalonConfigTimeout);
             driveTalon.configAllSettings(getDriveTalonConfig(), kTalonConfigTimeout);
             driveTalon.enableVoltageCompensation(true);
             driveTalon.setNeutralMode(NeutralMode.Brake);
+
+            if (i == 3) {
+                driveTalon.setInverted(true);
+            }
 
             DutyCycleEncoder encoder = new DutyCycleEncoder(i);
             encoder.setDistancePerRotation(4096.0);
@@ -97,9 +98,22 @@ public class Drivetrain extends SubsystemBase {
         resetHeading();
         setHeadingOffset(Rotation2d.fromDegrees(180));
 
-//        for (SwerveModule module : getSwerveModules()) {
-//            module.storeAzimuthZeroReference();
-//        }
+        SmartDashboard.putData(DRIVETRAIN_SAVE_CURRENT_AZIMUTH_ZERO_KEY,
+                new InstantCommand(this::saveCurrentPositionsAsAzimuthZeros));
+
+        SmartDashboard.putData(DRIVETRAIN_ROTATE_MODULES_TO_ANGLE_KEY,
+                new RotateModulesToAngle());
+    }
+
+    public void saveCurrentPositionsAsAzimuthZeros() {
+        for (SwerveModule module : getSwerveModules()) {
+            module.storeAzimuthZeroReference();
+        }
+    }
+
+    public void reset() {
+        resetDriveEncoders();
+        resetHeading();
     }
 
     /**
@@ -109,6 +123,10 @@ public class Drivetrain extends SubsystemBase {
      */
     public SwerveDriveKinematics getSwerveDriveKinematics() {
         return swerveDrive.getKinematics();
+    }
+
+    public void resetDriveEncoders() {
+        swerveDrive.resetDriveEncoders();
     }
 
     /**
@@ -143,30 +161,31 @@ public class Drivetrain extends SubsystemBase {
     public void periodic() {
         swerveDrive.periodic();
 
-        // TODO: Make custom WaltonSwerveDrive class
         if (loadedAzimuthReference) {
             for (SwerveModule module : getSwerveModules()) {
                 ((WaltonSwerveModule) module).periodic();
             }
         }
 
-        SmartDashboard.putNumber("Left front", ((WaltonSwerveModule)getSwerveModules()[0]).getAzimuthAbsoluteEncoderCounts());
-        SmartDashboard.putNumber("Right front", ((WaltonSwerveModule)getSwerveModules()[1]).getAzimuthAbsoluteEncoderCounts());
-        SmartDashboard.putNumber("Left back", ((WaltonSwerveModule)getSwerveModules()[2]).getAzimuthAbsoluteEncoderCounts());
-        SmartDashboard.putNumber("Right back", ((WaltonSwerveModule)getSwerveModules()[3]).getAzimuthAbsoluteEncoderCounts());
+        SmartDashboard.putNumber(DRIVETRAIN_LEFT_FRONT_ABSOLUTE_POSITION, ((WaltonSwerveModule)getSwerveModules()[0]).getAzimuthAbsoluteEncoderCounts());
+        SmartDashboard.putNumber(DRIVETRAIN_RIGHT_FRONT_ABSOLUTE_POSITION, ((WaltonSwerveModule)getSwerveModules()[1]).getAzimuthAbsoluteEncoderCounts());
+        SmartDashboard.putNumber(DRIVETRAIN_LEFT_REAR_ABSOLUTE_POSITION, ((WaltonSwerveModule)getSwerveModules()[2]).getAzimuthAbsoluteEncoderCounts());
+        SmartDashboard.putNumber(DRIVETRAIN_RIGHT_REAR_ABSOLUTE_POSITION, ((WaltonSwerveModule)getSwerveModules()[3]).getAzimuthAbsoluteEncoderCounts());
 
-        SmartDashboard.putNumber("Left front error", ((WaltonSwerveModule)getSwerveModules()[0]).getAzimuthClosedLoopError());
-        SmartDashboard.putNumber("Right front error", ((WaltonSwerveModule)getSwerveModules()[1]).getAzimuthClosedLoopError());
-        SmartDashboard.putNumber("Left back error", ((WaltonSwerveModule)getSwerveModules()[2]).getAzimuthClosedLoopError());
-        SmartDashboard.putNumber("Right back error", ((WaltonSwerveModule)getSwerveModules()[3]).getAzimuthClosedLoopError());
-    }
-    //Method necessary for driveRotationVelocityMode translation
-    static public Translation2d scaleTranslationInput(Translation2d input) {
-        double mag = input.getNorm();
-        final double scale = 1.35;
-        mag = Math.pow(mag, scale);
-        final Rotation2d rotation = new Rotation2d(input.getX(), input.getY());
-        return new Translation2d(rotation.getCos() * mag, rotation.getSin() * mag);
+        SmartDashboard.putNumber(DRIVETRAIN_LEFT_FRONT_RELATIVE_POSITION, ((WaltonSwerveModule)getSwerveModules()[0]).getAzimuthRelativeEncoderCounts());
+        SmartDashboard.putNumber(DRIVETRAIN_RIGHT_FRONT_RELATIVE_POSITION, ((WaltonSwerveModule)getSwerveModules()[1]).getAzimuthRelativeEncoderCounts());
+        SmartDashboard.putNumber(DRIVETRAIN_LEFT_REAR_RELATIVE_POSITION, ((WaltonSwerveModule)getSwerveModules()[2]).getAzimuthRelativeEncoderCounts());
+        SmartDashboard.putNumber(DRIVETRAIN_RIGHT_REAR_RELATIVE_POSITION, ((WaltonSwerveModule)getSwerveModules()[3]).getAzimuthRelativeEncoderCounts());
+
+        SmartDashboard.putNumber(DRIVETRAIN_LEFT_FRONT_ANGLE_DEGREES, ((WaltonSwerveModule)getSwerveModules()[0]).getAzimuthRotation2d().getDegrees());
+        SmartDashboard.putNumber(DRIVETRAIN_RIGHT_FRONT_ANGLE_DEGREES, ((WaltonSwerveModule)getSwerveModules()[1]).getAzimuthRotation2d().getDegrees());
+        SmartDashboard.putNumber(DRIVETRAIN_LEFT_REAR_ANGLE_DEGREES, ((WaltonSwerveModule)getSwerveModules()[2]).getAzimuthRotation2d().getDegrees());
+        SmartDashboard.putNumber(DRIVETRAIN_RIGHT_REAR_ANGLE_DEGREES, ((WaltonSwerveModule)getSwerveModules()[3]).getAzimuthRotation2d().getDegrees());
+
+        SmartDashboard.putNumber(DRIVETRAIN_LEFT_FRONT_VELOCITY_ERROR, ((WaltonSwerveModule)getSwerveModules()[0]).getDriveVelocityError());
+        SmartDashboard.putNumber(DRIVETRAIN_RIGHT_FRONT_VELOCITY_ERROR, ((WaltonSwerveModule)getSwerveModules()[1]).getDriveVelocityError());
+        SmartDashboard.putNumber(DRIVETRAIN_LEFT_REAR_VELOCITY_ERROR, ((WaltonSwerveModule)getSwerveModules()[2]).getDriveVelocityError());
+        SmartDashboard.putNumber(DRIVETRAIN_RIGHT_REAR_VELOCITY_ERROR, ((WaltonSwerveModule)getSwerveModules()[3]).getDriveVelocityError());
     }
 
     /**
@@ -175,16 +194,6 @@ public class Drivetrain extends SubsystemBase {
     public void drive(
             double vxMetersPerSecond, double vyMetersPerSecond, double omegaRadiansPerSecond) {
         swerveDrive.drive(vxMetersPerSecond, vyMetersPerSecond, omegaRadiansPerSecond, true);
-    }
-
-    public void driveRotationVelocityMode(double dx, double dy, double dr) {
-        Translation2d translation = Drivetrain.scaleTranslationInput(new Translation2d(dx, dy));
-
-        dx = vxRateLimiter.calculate(translation.getX() * kMaxSpeedMetersPerSecond);
-        dy = vyRateLimiter.calculate(translation.getY() * kMaxSpeedMetersPerSecond);
-        dr = vrRateLimiter.calculate(dr * kMaxOmega);
-
-        swerveDrive.drive(dx, dy, dr, true);
     }
 
     /**

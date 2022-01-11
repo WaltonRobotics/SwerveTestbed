@@ -8,12 +8,12 @@ import com.revrobotics.CANSparkMax;
 import edu.wpi.first.wpilibj.AnalogEncoder;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.Preferences;
-import edu.wpi.first.wpilibj.controller.ProfiledPIDController;
-import edu.wpi.first.wpilibj.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.geometry.Translation2d;
-import edu.wpi.first.wpilibj.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj.util.Units;
-import org.strykeforce.swerve.SwerveModule;
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.util.Units;
+import frc.lib.org.strykeforce.swerve.SwerveModule;
 
 import java.util.logging.Level;
 
@@ -142,12 +142,16 @@ public class WaltonSwerveModule implements SwerveModule {
         return driveTalon;
     }
 
-    public double getAzimuthClosedLoopError() {
-        return azimuthController.getPositionError();
+    public double getDriveVelocityError() {
+        return driveTalon.getClosedLoopError();
     }
 
     public int getAzimuthAbsoluteEncoderCounts() {
         return (4096 - ((int)azimuthEncoder.getDistance())) + azimuthPositionOffsetCounts;
+    }
+
+    public double getAzimuthRelativeEncoderCounts() {
+        return azimuthSparkMax.getEncoder().getPosition();
     }
 
     public Rotation2d getAzimuthRotation2d() {

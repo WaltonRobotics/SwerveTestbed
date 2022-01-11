@@ -5,8 +5,9 @@ import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
 import com.ctre.phoenix.motorcontrol.VelocityMeasPeriod;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
-import edu.wpi.first.wpilibj.geometry.Translation2d;
-import edu.wpi.first.wpilibj.util.Units;
+import com.ctre.phoenix.sensors.SensorVelocityMeasPeriod;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 
 public class Constants {
 
@@ -36,8 +37,8 @@ public class Constants {
                         / 2.0; // wheel locations below
 
         // From: https://github.com/strykeforce/axis-config/
-        static final double kDriveMotorOutputGear = 22;
-        static final double kDriveInputGear = 48;
+        static final double kDriveMotorOutputGear = 12;
+        static final double kDriveInputGear = 21;
         static final double kBevelInputGear = 15;
         static final double kBevelOutputGear = 45;
         public static final int kTalonConfigTimeout = 10; // ms
@@ -69,11 +70,40 @@ public class Constants {
             driveConfig.slot0.integralZone = 500;
             driveConfig.slot0.maxIntegralAccumulator = 75_000;
             driveConfig.slot0.allowableClosedloopError = 0;
-            driveConfig.velocityMeasurementPeriod = VelocityMeasPeriod.Period_100Ms;
+            driveConfig.velocityMeasurementPeriod = SensorVelocityMeasPeriod.Period_100Ms;
             driveConfig.velocityMeasurementWindow = 64;
             driveConfig.voltageCompSaturation = 12;
             return driveConfig;
         }
+    }
+
+    public static final class SmartDashboardKeys {
+
+        public static final String DRIVETRAIN_SAVE_CURRENT_AZIMUTH_ZERO_KEY = "Drivetrain/Save Current Azimuth Zero";
+        public static final String DRIVETRAIN_ROTATE_MODULES_TO_ANGLE_KEY = "Drivetrain/Rotate Modules To Angle";
+
+        public static final String DRIVETRAIN_SETPOINT_ANGLE_DEGREES = "Drivetrain/Setpoint Angle Degrees";
+
+        public static final String DRIVETRAIN_LEFT_FRONT_ABSOLUTE_POSITION = "Drivetrain/Left Front Absolute Counts";
+        public static final String DRIVETRAIN_RIGHT_FRONT_ABSOLUTE_POSITION = "Drivetrain/Right Front Absolute Counts";
+        public static final String DRIVETRAIN_LEFT_REAR_ABSOLUTE_POSITION = "Drivetrain/Left Rear Absolute Counts";
+        public static final String DRIVETRAIN_RIGHT_REAR_ABSOLUTE_POSITION = "Drivetrain/Right Rear Absolute Counts";
+
+        public static final String DRIVETRAIN_LEFT_FRONT_RELATIVE_POSITION = "Drivetrain/Left Front Relative Counts";
+        public static final String DRIVETRAIN_RIGHT_FRONT_RELATIVE_POSITION = "Drivetrain/Right Front Relative Counts";
+        public static final String DRIVETRAIN_LEFT_REAR_RELATIVE_POSITION = "Drivetrain/Left Rear Relative Counts";
+        public static final String DRIVETRAIN_RIGHT_REAR_RELATIVE_POSITION = "Drivetrain/Right Rear Relative Counts";
+
+        public static final String DRIVETRAIN_LEFT_FRONT_ANGLE_DEGREES = "Drivetrain/Left Front Angle Degrees";
+        public static final String DRIVETRAIN_RIGHT_FRONT_ANGLE_DEGREES = "Drivetrain/Right Front Angle Degrees";
+        public static final String DRIVETRAIN_LEFT_REAR_ANGLE_DEGREES = "Drivetrain/Left Rear Angle Degrees";
+        public static final String DRIVETRAIN_RIGHT_REAR_ANGLE_DEGREES = "Drivetrain/Right Rear Angle Degrees";
+
+        public static final String DRIVETRAIN_LEFT_FRONT_VELOCITY_ERROR = "Drivetrain/Left Front Velocity Error";
+        public static final String DRIVETRAIN_RIGHT_FRONT_VELOCITY_ERROR = "Drivetrain/Right Front Velocity Error";
+        public static final String DRIVETRAIN_LEFT_REAR_VELOCITY_ERROR = "Drivetrain/Left Rear Velocity Error";
+        public static final String DRIVETRAIN_RIGHT_REAR_VELOCITY_ERROR = "Drivetrain/Right Rear Velocity Error";
+
     }
 
 }
