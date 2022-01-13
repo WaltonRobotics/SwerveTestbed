@@ -4,19 +4,19 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import frc.robot.commands.AutoDrive;
-import frc.robot.commands.DriveCommand;
-import frc.robot.commands.RotateModulesToAngle;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.commands.auton.RotateModulesToAngle;
+import frc.robot.commands.auton.SwerveTrajectoryCommand;
+import frc.robot.commands.teleop.DriveCommand;
 import frc.robot.subsystems.Drivetrain;
 
 import static frc.robot.Constants.SmartDashboardKeys.DRIVETRAIN_ROTATE_MODULES_TO_ANGLE_KEY;
 import static frc.robot.Constants.SmartDashboardKeys.DRIVETRAIN_SAVE_CURRENT_AZIMUTH_ZERO_KEY;
+import static frc.robot.Paths.testTrajectory;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -69,7 +69,14 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
-    CommandScheduler.getInstance().schedule(new AutoDrive());
+//    CommandScheduler.getInstance().schedule(new AutoDrive());
+
+    drivetrain.reset();
+
+    CommandScheduler.getInstance().schedule(new SequentialCommandGroup(
+            new InstantCommand(() -> drivetrain.resetPose(testTrajectory.getInitialPose())),
+            new SwerveTrajectoryCommand(testTrajectory)
+    ));
   }
 
   /** This function is called periodically during autonomous. */

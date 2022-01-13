@@ -14,17 +14,19 @@ import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.org.strykeforce.swerve.SwerveDrive;
 import frc.lib.org.strykeforce.swerve.SwerveModule;
-import frc.robot.commands.RotateModulesToAngle;
+import frc.robot.commands.auton.LiveDashboardHelper;
 import frc.robot.utils.WaltonSwerveModule;
 
 import static frc.robot.Constants.SmartDashboardKeys.*;
 import static frc.robot.Constants.SwerveDriveConfig.*;
+import static frc.robot.Robot.drivetrain;
 
 public class Drivetrain extends SubsystemBase {
 
@@ -32,6 +34,8 @@ public class Drivetrain extends SubsystemBase {
 
     private final SwerveDrive swerveDrive;
     private final AHRS ahrs = new AHRS(SPI.Port.kMXP);
+
+    private Field2d field = new Field2d();
 
     public Drivetrain() {
         var moduleBuilder =
@@ -51,8 +55,6 @@ public class Drivetrain extends SubsystemBase {
             azimuthSparkMax.setOpenLoopRampRate(0.0);
             azimuthSparkMax.setIdleMode(CANSparkMax.IdleMode.kCoast);
             azimuthSparkMax.setInverted(true);
-
-
 
             var driveTalon = new TalonFX(i + 11);
             driveTalon.configFactoryDefault(kTalonConfigTimeout);
@@ -135,7 +137,7 @@ public class Drivetrain extends SubsystemBase {
      *
      * @param pose the current pose
      */
-    public void resetOdometry(Pose2d pose) {
+    public void resetPose(Pose2d pose) {
         swerveDrive.resetOdometry(pose);
     }
 
@@ -160,6 +162,9 @@ public class Drivetrain extends SubsystemBase {
                 ((WaltonSwerveModule) module).periodic();
             }
         }
+
+        field.setRobotPose(getPoseMeters());
+        LiveDashboardHelper.putRobotData(getPoseMeters());
 
         SmartDashboard.putNumber(DRIVETRAIN_LEFT_FRONT_ABSOLUTE_POSITION, ((WaltonSwerveModule)getSwerveModules()[0]).getAzimuthAbsoluteEncoderCounts());
         SmartDashboard.putNumber(DRIVETRAIN_RIGHT_FRONT_ABSOLUTE_POSITION, ((WaltonSwerveModule)getSwerveModules()[1]).getAzimuthAbsoluteEncoderCounts());
