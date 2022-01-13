@@ -84,18 +84,20 @@ public class Robot extends TimedRobot {
     m_encoder = m_motor.getEncoder();
 
     double relativeEncoderDegreesPerTick = 1.0 / (5.33 * 12.0);
+    double inverseEncoderConstant = 1.0 / relativeEncoderDegreesPerTick;
+
     m_encoder.setPositionConversionFactor(relativeEncoderDegreesPerTick);
     m_encoder.setVelocityConversionFactor(relativeEncoderDegreesPerTick);
 
     // PID coefficients
-    kP = 5e-5 * relativeEncoderDegreesPerTick;
-    kI = 1e-6 * relativeEncoderDegreesPerTick;
+    kP = 5e-5 * inverseEncoderConstant;
+    kI = 1e-6 * inverseEncoderConstant;
     kD = 0;
     kIz = 0;
-    kFF = 0.000156;
+    kFF = 0.000156 * inverseEncoderConstant;
     kMaxOutput = 1;
     kMinOutput = -1;
-    maxRPM = 5700.0 * relativeEncoderDegreesPerTick;
+    maxRPM = 5700.0 * inverseEncoderConstant;
 
     // Smart Motion Coefficients
     maxVel = 120; // rpm
@@ -146,6 +148,10 @@ public class Robot extends TimedRobot {
 
     // button to toggle between velocity and smart motion modes
     SmartDashboard.putBoolean("Mode", true);
+
+    SmartDashboard.putNumber("SetPoint", 0.0);
+    SmartDashboard.putNumber("Process Variable", 0.0);
+    SmartDashboard.putNumber("Output", 0.0);
   }
 
   @Override
