@@ -88,18 +88,18 @@ public class Robot extends TimedRobot {
     m_encoder.setVelocityConversionFactor(relativeEncoderDegreesPerTick);
 
     // PID coefficients
-    kP = 5e-5;
-    kI = 1e-6;
+    kP = 5e-5 * relativeEncoderDegreesPerTick;
+    kI = 1e-6 * relativeEncoderDegreesPerTick;
     kD = 0;
     kIz = 0;
     kFF = 0.000156;
     kMaxOutput = 1;
     kMinOutput = -1;
-    maxRPM = 5700;
+    maxRPM = 5700.0 * relativeEncoderDegreesPerTick;
 
     // Smart Motion Coefficients
-    maxVel = 2000; // rpm
-    maxAcc = 1500;
+    maxVel = 120; // rpm
+    maxAcc = 100;
 
     // set PID coefficients
     m_pidController.setP(kP);

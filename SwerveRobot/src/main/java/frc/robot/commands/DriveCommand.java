@@ -1,20 +1,21 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.lib.org.strykeforce.thirdcoast.util.ExpoScale;
 
 import static frc.robot.Constants.SwerveDriveConfig.kMaxOmega;
 import static frc.robot.Constants.SwerveDriveConfig.kMaxSpeedMetersPerSecond;
-import static frc.robot.OI.leftJoystick;
-import static frc.robot.OI.rightJoystick;
+import static frc.robot.OI.*;
 import static frc.robot.Robot.drivetrain;
 
 public class DriveCommand extends CommandBase {
 
-    private static final double FORWARD_DEADBAND = 0.05;
-    private static final double STRAFE_DEADBAND = 0.05;
-    private static final double YAW_DEADBAND = 0.01;
+    private static final double FORWARD_DEADBAND = 0.1;
+    private static final double STRAFE_DEADBAND = 0.1;
+    private static final double YAW_DEADBAND = 0.1;
 
     private static final double FORWARD_XPOSCALE = 0.6;
     private static final double STRAFE_XPOSCALE = 0.6;
@@ -34,9 +35,24 @@ public class DriveCommand extends CommandBase {
 
     @Override
     public void execute(){
-        double forward = forwardScale.apply(-leftJoystick.getY());
-        double strafe = strafeScale.apply(-leftJoystick.getX());
-        double yaw = yawScale.apply(rightJoystick.getTwist());
+        double forward;
+        double strafe;
+        double yaw;
+
+//        if (DriverStation.isJoystickConnected(2)) {
+//            forward = forwardScale.apply(-gamepad.getLeftY());
+//            strafe = strafeScale.apply(-gamepad.getLeftX());
+//            yaw = yawScale.apply(-gamepad.getRightX());
+//        } else {
+//            forward = forwardScale.apply(-leftJoystick.getY());
+//            strafe = strafeScale.apply(-leftJoystick.getX());
+//            yaw = yawScale.apply(rightJoystick.getTwist());
+//        }
+
+        forward = forwardScale.apply(-leftJoystick.getY());
+        strafe = strafeScale.apply(-leftJoystick.getX());
+        yaw = yawScale.apply(rightJoystick.getTwist());
+
         double vx = forward * kMaxSpeedMetersPerSecond;
         double vy = strafe * kMaxSpeedMetersPerSecond;
         double omega = yaw * kMaxOmega;
