@@ -9,9 +9,14 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.commands.AutoDrive;
 import frc.robot.commands.DriveCommand;
+import frc.robot.commands.RotateModulesToAngle;
 import frc.robot.subsystems.Drivetrain;
+
+import static frc.robot.Constants.SmartDashboardKeys.DRIVETRAIN_ROTATE_MODULES_TO_ANGLE_KEY;
+import static frc.robot.Constants.SmartDashboardKeys.DRIVETRAIN_SAVE_CURRENT_AZIMUTH_ZERO_KEY;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -32,6 +37,12 @@ public class Robot extends TimedRobot {
     drivetrain = new Drivetrain();
 
     CommandScheduler.getInstance().setDefaultCommand(drivetrain, new DriveCommand());
+
+    SmartDashboard.putData(DRIVETRAIN_SAVE_CURRENT_AZIMUTH_ZERO_KEY,
+            new InstantCommand(drivetrain::saveCurrentPositionsAsAzimuthZeros));
+
+    SmartDashboard.putData(DRIVETRAIN_ROTATE_MODULES_TO_ANGLE_KEY,
+            new RotateModulesToAngle());
   }
 
   /**

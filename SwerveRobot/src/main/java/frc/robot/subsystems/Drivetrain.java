@@ -97,12 +97,6 @@ public class Drivetrain extends SubsystemBase {
         swerveDrive = new SwerveDrive(ahrs, swerveModules);
         resetHeading();
         setHeadingOffset(Rotation2d.fromDegrees(180));
-
-        SmartDashboard.putData(DRIVETRAIN_SAVE_CURRENT_AZIMUTH_ZERO_KEY,
-                new InstantCommand(this::saveCurrentPositionsAsAzimuthZeros));
-
-        SmartDashboard.putData(DRIVETRAIN_ROTATE_MODULES_TO_ANGLE_KEY,
-                new RotateModulesToAngle());
     }
 
     public void saveCurrentPositionsAsAzimuthZeros() {
