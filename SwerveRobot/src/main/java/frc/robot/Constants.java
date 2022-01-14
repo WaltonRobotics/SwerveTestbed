@@ -22,7 +22,7 @@ public class Constants {
     public static final class SwerveDriveConfig {
         // TODO: verify diameter and run calibration
         // 500 cm calibration = actual / odometry
-        public static final double kWheelDiameterInches = 3.0 * (584.0 / 501.0);
+        public static final double kWheelDiameterInches = 3.0;
 
         // From: https://github.com/strykeforce/axis-config/
         public static final double kMaxSpeedMetersPerSecond = 3.889;
