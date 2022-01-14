@@ -144,6 +144,10 @@ public class Drivetrain extends SubsystemBase {
         resetHeading();
     }
 
+    public Field2d getField() {
+        return field;
+    }
+
     /**
      * Returns the swerve drive kinematics object for use during trajectory configuration.
      *

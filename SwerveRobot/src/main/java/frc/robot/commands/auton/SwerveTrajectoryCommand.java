@@ -47,6 +47,8 @@ public class SwerveTrajectoryCommand extends CommandBase {
 
         LiveDashboardHelper.putRobotData(drivetrain.getPoseMeters());
         LiveDashboardHelper.putTrajectoryData(trajectory.getInitialPose());
+
+        drivetrain.getField().getObject("traj").setTrajectory(trajectory);
     }
 
     public void execute() {
