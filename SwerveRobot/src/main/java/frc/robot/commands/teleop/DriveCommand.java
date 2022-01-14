@@ -51,7 +51,7 @@ public class DriveCommand extends CommandBase {
 
         forward = forwardScale.apply(-leftJoystick.getY());
         strafe = strafeScale.apply(-leftJoystick.getX());
-        yaw = yawScale.apply(rightJoystick.getTwist());
+        yaw = yawScale.apply(-rightJoystick.getTwist());
 
         double vx = forward * kMaxSpeedMetersPerSecond;
         double vy = strafe * kMaxSpeedMetersPerSecond;

@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.kauailabs.navx.frc.AHRS;
@@ -56,15 +57,17 @@ public class Drivetrain extends SubsystemBase {
             SparkMaxPIDController azimuthPID = azimuthSparkMax.getPIDController();
 
             double relativeEncoderDegreesPerTick = 1.0 / (5.33 * 12.0);
+            double inverseEncoderConstant = 1.0 / relativeEncoderDegreesPerTick;
+
             azimuthRelativeEncoder.setPositionConversionFactor(relativeEncoderDegreesPerTick);
             azimuthRelativeEncoder.setVelocityConversionFactor(relativeEncoderDegreesPerTick);
 
             // Smart Motion Configuration
-            azimuthPID.setP(0.00005);
-            azimuthPID.setI(0.000001);
+            azimuthPID.setP(5e-5 * inverseEncoderConstant);
+            azimuthPID.setI(1e-6 * inverseEncoderConstant);
             azimuthPID.setD(0.0);
             azimuthPID.setIZone(0.0);
-            azimuthPID.setFF(0.000156);
+            azimuthPID.setFF(0.000156 * inverseEncoderConstant);
             azimuthPID.setOutputRange(-1.0, 1.0);
 
             /**
@@ -80,9 +83,9 @@ public class Drivetrain extends SubsystemBase {
              * error for the pid controller in Smart Motion mode
              */
             int smartMotionSlot = 0;
-            azimuthPID.setSmartMotionMaxVelocity(2000, smartMotionSlot);
+            azimuthPID.setSmartMotionMaxVelocity(120, smartMotionSlot);
             azimuthPID.setSmartMotionMinOutputVelocity(0, smartMotionSlot);
-            azimuthPID.setSmartMotionMaxAccel(1500, smartMotionSlot);
+            azimuthPID.setSmartMotionMaxAccel(100, smartMotionSlot);
             azimuthPID.setSmartMotionAllowedClosedLoopError(0, smartMotionSlot);
 
             var driveTalon = new TalonFX(i + 11);
@@ -92,7 +95,11 @@ public class Drivetrain extends SubsystemBase {
             driveTalon.setNeutralMode(NeutralMode.Brake);
 
             if (i == 3) {
+                driveTalon.setInverted(false);
+                driveTalon.setSensorPhase(false);
+            } else {
                 driveTalon.setInverted(true);
+                driveTalon.setSensorPhase(true);
             }
 
             DutyCycleEncoder azimuthAbsoluteEncoder = new DutyCycleEncoder(i);
@@ -119,9 +126,11 @@ public class Drivetrain extends SubsystemBase {
 
         swerveDrive = new SwerveDrive(ahrs, swerveModules);
         resetHeading();
-        setHeadingOffset(Rotation2d.fromDegrees(180));
+//        setHeadingOffset(Rotation2d.fromDegrees(180));
 
         SmartDashboard.putData("Field", field);
+
+//        saveCurrentPositionsAsAzimuthZeros();
     }
 
     public void saveCurrentPositionsAsAzimuthZeros() {
@@ -178,6 +187,11 @@ public class Drivetrain extends SubsystemBase {
      */
     @Override
     public void periodic() {
+//        for (SwerveModule module : getSwerveModules()) {
+//            ((WaltonSwerveModule)module).setAzimuthRotation2d(Rotation2d.fromDegrees(0.0));
+//            ((WaltonSwerveModule)module).setDriveClosedLoopMetersPerSecond(kMaxSpeedMetersPerSecond / 4.0);
+//        }
+
         swerveDrive.periodic();
 
         field.setRobotPose(getPoseMeters());

@@ -124,8 +124,6 @@ public class WaltonSwerveModule implements SwerveModule {
         double azimuthSetpoint = (azimuthAbsoluteCounts - reference) / azimuthAbsoluteCountsPerRev;
 
         azimuthSparkMax.getEncoder().setPosition(azimuthSetpoint);
-
-        azimuthSparkMax.getPIDController().setReference(azimuthSetpoint, CANSparkMax.ControlType.kSmartMotion);
     }
 
     public CANSparkMax getAzimuthSparkMax() {
@@ -178,7 +176,7 @@ public class WaltonSwerveModule implements SwerveModule {
         driveTalon.set(ControlMode.PercentOutput, metersPerSecond / driveMaximumMetersPerSecond);
     }
 
-    private void setDriveClosedLoopMetersPerSecond(double metersPerSecond) {
+    public void setDriveClosedLoopMetersPerSecond(double metersPerSecond) {
         double wheelRotationsPerSecond = metersPerSecond / wheelCircumferenceMeters;
         double motorRotationsPerSecond = wheelRotationsPerSecond / driveGearRatio;
         double encoderCountsPerSecond = motorRotationsPerSecond * driveCountsPerRev;

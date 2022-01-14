@@ -155,6 +155,33 @@ public class Robot extends TimedRobot {
   }
 
   @Override
+  public void teleopInit() {
+    // display PID coefficients on SmartDashboard
+    SmartDashboard.putNumber("P Gain", kP);
+    SmartDashboard.putNumber("I Gain", kI);
+    SmartDashboard.putNumber("D Gain", kD);
+    SmartDashboard.putNumber("I Zone", kIz);
+    SmartDashboard.putNumber("Feed Forward", kFF);
+    SmartDashboard.putNumber("Max Output", kMaxOutput);
+    SmartDashboard.putNumber("Min Output", kMinOutput);
+
+    // display Smart Motion coefficients
+    SmartDashboard.putNumber("Max Velocity", maxVel);
+    SmartDashboard.putNumber("Min Velocity", minVel);
+    SmartDashboard.putNumber("Max Acceleration", maxAcc);
+    SmartDashboard.putNumber("Allowed Closed Loop Error", allowedErr);
+    SmartDashboard.putNumber("Set Position", 0);
+    SmartDashboard.putNumber("Set Velocity", 0);
+
+    // button to toggle between velocity and smart motion modes
+    SmartDashboard.putBoolean("Mode", true);
+
+    SmartDashboard.putNumber("SetPoint", 0.0);
+    SmartDashboard.putNumber("Process Variable", 0.0);
+    SmartDashboard.putNumber("Output", 0.0);
+  }
+
+  @Override
   public void teleopPeriodic() {
     // read PID coefficients from SmartDashboard
     double p = SmartDashboard.getNumber("P Gain", 0);

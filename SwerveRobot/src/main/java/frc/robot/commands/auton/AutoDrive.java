@@ -12,19 +12,9 @@ public class AutoDrive extends SequentialCommandGroup {
     public AutoDrive() {
         addCommands(
                 new RunCommand(() ->
-                        drivetrain.move(-kMaxSpeedMetersPerSecond * 0.25, 0.0, 0.0, true),
+                        drivetrain.move(kMaxSpeedMetersPerSecond / 4.0, 0.0, 0.0, false),
                         drivetrain).withTimeout(5.0)
         );
-    }
-
-    @Override
-    public void execute() {
-
-    }
-
-    @Override
-    public boolean isFinished() {
-        return false;
     }
 
 }

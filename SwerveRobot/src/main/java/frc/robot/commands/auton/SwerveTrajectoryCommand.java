@@ -41,6 +41,7 @@ public class SwerveTrajectoryCommand extends CommandBase {
         holonomicDriveController.setEnabled(true);
 
         timer.reset();
+        timer.start();
 
         LiveDashboardTable.getInstance().setFollowingPath(true);
 
@@ -52,7 +53,7 @@ public class SwerveTrajectoryCommand extends CommandBase {
         double currentTime = timer.get();
 
         Trajectory.State state = trajectory.sample(currentTime);
-        ChassisSpeeds speeds = holonomicDriveController.calculate(drivetrain.getPoseMeters(), state, Rotation2d.fromDegrees(180));
+        ChassisSpeeds speeds = holonomicDriveController.calculate(drivetrain.getPoseMeters(), state, Rotation2d.fromDegrees(0.0));
 
         drivetrain.move(
                 speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, speeds.omegaRadiansPerSecond, false);
