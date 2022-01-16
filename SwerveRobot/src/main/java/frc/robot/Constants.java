@@ -27,8 +27,8 @@ public class Constants {
         // From: https://github.com/strykeforce/axis-config/
         public static final double kMaxSpeedMetersPerSecond = 3.889;
 
-        public static final double kDistanceBetweenWheelsWidthWiseMeters = Units.inchesToMeters(16.0 + 17.0 / 32.0 + 1.761652 * 2.0); // 18.586 in
-        public static final double kDistanceBetweenWheelsLengthWiseMeters = Units.inchesToMeters(15.0 + 1.0 / 16.0 + 1.761652 * 2.0); // 20.055 in
+        public static final double kDistanceBetweenWheelsWidthWiseMeters = Units.inchesToMeters(16.0 + 17.0 / 32.0 + 1.761652 * 2.0); // 20.055 in
+        public static final double kDistanceBetweenWheelsLengthWiseMeters = Units.inchesToMeters(15.0 + 1.0 / 16.0 + 1.761652 * 2.0); // 18.586 in
         //Luke says hi
 
         public static final double kMaxOmega =
@@ -63,10 +63,14 @@ public class Constants {
             driveConfig.supplyCurrLimit.triggerThresholdCurrent = 45;
             driveConfig.supplyCurrLimit.triggerThresholdTime = 40;
             driveConfig.supplyCurrLimit.enable = true;
-            driveConfig.slot0.kP = 0.045;
-            driveConfig.slot0.kI = 0.0005;
+            driveConfig.slot0.kP = 0.0051;
+            driveConfig.slot0.kI = 3.01E-05;
             driveConfig.slot0.kD = 0.000;
-            driveConfig.slot0.kF = 0.047;
+            driveConfig.slot0.kF = 0.0455603184323331;
+//            driveConfig.slot0.kP = 0.045;
+//            driveConfig.slot0.kI = 0.0005;
+//            driveConfig.slot0.kD = 0.000;
+//            driveConfig.slot0.kF = 0.047;
             driveConfig.slot0.integralZone = 500;
             driveConfig.slot0.maxIntegralAccumulator = 75_000;
             driveConfig.slot0.allowableClosedloopError = 0;

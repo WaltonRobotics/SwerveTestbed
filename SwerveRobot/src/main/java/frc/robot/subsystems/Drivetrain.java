@@ -133,6 +133,12 @@ public class Drivetrain extends SubsystemBase {
 //        saveCurrentPositionsAsAzimuthZeros();
     }
 
+    public void loadAzimuthZeroReference() {
+        for (SwerveModule module : getSwerveModules()) {
+            module.loadAndSetAzimuthZeroReference();
+        }
+    }
+
     public void saveCurrentPositionsAsAzimuthZeros() {
         for (SwerveModule module : getSwerveModules()) {
             module.storeAzimuthZeroReference();
@@ -186,15 +192,19 @@ public class Drivetrain extends SubsystemBase {
         return swerveDrive.getPoseMeters();
     }
 
+    public void setSpeedAndRotation(double speed, double rotationAngleDegrees) {
+        for (SwerveModule module : getSwerveModules()) {
+            ((WaltonSwerveModule)module).setDriveClosedLoopMetersPerSecond(speed);
+            ((WaltonSwerveModule)module).setAzimuthRotation2d(Rotation2d.fromDegrees(rotationAngleDegrees));
+        }
+    }
+
     /**
      * Perform periodic swerve drive odometry update.
      */
     @Override
     public void periodic() {
-//        for (SwerveModule module : getSwerveModules()) {
-//            ((WaltonSwerveModule)module).setAzimuthRotation2d(Rotation2d.fromDegrees(0.0));
-//            ((WaltonSwerveModule)module).setDriveClosedLoopMetersPerSecond(kMaxSpeedMetersPerSecond / 4.0);
-//        }
+//        setSpeedAndRotation(0.0, 0.0);
 
         swerveDrive.periodic();
 

@@ -15,9 +15,8 @@ import frc.robot.commands.teleop.DriveCommand;
 import frc.robot.commands.auton.RotateModulesToAngle;
 import frc.robot.subsystems.Drivetrain;
 
-import static frc.robot.Constants.SmartDashboardKeys.DRIVETRAIN_ROTATE_MODULES_TO_ANGLE_KEY;
-import static frc.robot.Constants.SmartDashboardKeys.DRIVETRAIN_SAVE_CURRENT_AZIMUTH_ZERO_KEY;
-import static frc.robot.Paths.testTrajectory;
+import static frc.robot.Constants.SmartDashboardKeys.*;
+import static frc.robot.Paths.*;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -44,6 +43,8 @@ public class Robot extends TimedRobot {
 
     SmartDashboard.putData(DRIVETRAIN_ROTATE_MODULES_TO_ANGLE_KEY,
             new RotateModulesToAngle());
+
+    SmartDashboard.putNumber(DRIVETRAIN_SETPOINT_ANGLE_DEGREES, 0.0);
   }
 
   /**
@@ -70,13 +71,17 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
-    CommandScheduler.getInstance().schedule(new AutoDrive());
-//    drivetrain.reset();
-//
-//    CommandScheduler.getInstance().schedule(new SequentialCommandGroup(
-//            new InstantCommand(() -> drivetrain.resetPose(testTrajectory.getInitialPose())),
-//            new SwerveTrajectoryCommand(testTrajectory)
-//    ));
+    drivetrain.reset();
+    drivetrain.loadAzimuthZeroReference();
+
+//    CommandScheduler.getInstance().schedule(new AutoDrive());
+
+    CommandScheduler.getInstance().schedule(new SequentialCommandGroup(
+            new InstantCommand(() -> drivetrain.resetPose(sCurve.getInitialPose())),
+            new SwerveTrajectoryCommand(sCurve),
+            new SwerveTrajectoryCommand(straight),
+            new SwerveTrajectoryCommand(backupToOrigin)
+    ));
   }
 
   /** This function is called periodically during autonomous. */

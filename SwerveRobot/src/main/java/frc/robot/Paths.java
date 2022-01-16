@@ -14,18 +14,49 @@ import static frc.robot.Robot.drivetrain;
 
 public class Paths {
 
-    public static Trajectory testTrajectory = generateTestTrajectory();
+    public static Trajectory sCurve = generateSCurveTrajectory();
+    public static Trajectory straight = generateStraightTrajectory();
+    public static Trajectory backupToOrigin = generateBackupToOrigin();
 
-    public static Trajectory generateTestTrajectory() {
+    public static Trajectory generateSCurveTrajectory() {
         TrajectoryConfig config = new TrajectoryConfig(
-                Units.feetToMeters(4.0), Units.feetToMeters(3.0));
+                Units.feetToMeters(11.0), Units.feetToMeters(7.0));
 
         config.setKinematics(drivetrain.getSwerveDriveKinematics());
 
         return TrajectoryGenerator.generateTrajectory(
                 Arrays.asList(
-                        new Pose2d(Units.feetToMeters(7.541), Units.feetToMeters(4.866), Rotation2d.fromDegrees(0)),
-                        new Pose2d(Units.feetToMeters(16.396), Units.feetToMeters(8.81), Rotation2d.fromDegrees(0))),
+                        new Pose2d(Units.feetToMeters(2.5), Units.feetToMeters(7.5), Rotation2d.fromDegrees(0)),
+                        new Pose2d(Units.feetToMeters(10.461), Units.feetToMeters(16.273), Rotation2d.fromDegrees(0))),
+                config
+        );
+    }
+
+    public static Trajectory generateStraightTrajectory() {
+        TrajectoryConfig config = new TrajectoryConfig(
+                Units.feetToMeters(11.0), Units.feetToMeters(7.0));
+
+        config.setKinematics(drivetrain.getSwerveDriveKinematics());
+
+        return TrajectoryGenerator.generateTrajectory(
+                Arrays.asList(
+                        new Pose2d(Units.feetToMeters(10.461), Units.feetToMeters(16.273), Rotation2d.fromDegrees(0)),
+                        new Pose2d(Units.feetToMeters(15.461), Units.feetToMeters(16.273), Rotation2d.fromDegrees(0))),
+                config
+        );
+    }
+
+    public static Trajectory generateBackupToOrigin() {
+        TrajectoryConfig config = new TrajectoryConfig(
+                Units.feetToMeters(11.0), Units.feetToMeters(7.0));
+
+        config.setKinematics(drivetrain.getSwerveDriveKinematics());
+        config.setReversed(true);
+
+        return TrajectoryGenerator.generateTrajectory(
+                Arrays.asList(
+                        new Pose2d(Units.feetToMeters(15.461), Units.feetToMeters(16.273), Rotation2d.fromDegrees(0)),
+                        new Pose2d(Units.feetToMeters(2.5), Units.feetToMeters(7.5), Rotation2d.fromDegrees(0))),
                 config
         );
     }

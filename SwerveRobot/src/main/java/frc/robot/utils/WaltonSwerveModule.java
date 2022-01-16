@@ -121,7 +121,7 @@ public class WaltonSwerveModule implements SwerveModule {
 
         double azimuthAbsoluteCounts = getAzimuthAbsoluteEncoderCounts();
 
-        double azimuthSetpoint = (azimuthAbsoluteCounts - reference) / azimuthAbsoluteCountsPerRev;
+        double azimuthSetpoint = Math.IEEEremainder((azimuthAbsoluteCounts - reference) / azimuthAbsoluteCountsPerRev, 1.0);
 
         azimuthSparkMax.getEncoder().setPosition(azimuthSetpoint);
     }
@@ -159,8 +159,10 @@ public class WaltonSwerveModule implements SwerveModule {
     public void setAzimuthRotation2d(Rotation2d angle) {
         double countsBefore = getAzimuthRelativeEncoderCounts();
         double countsFromAngle = angle.getRadians() / (2.0 * Math.PI);
-        double countsDelta = Math.IEEEremainder(countsFromAngle - countsBefore, 1.0);
-        currentTargetPositionCounts = countsBefore + countsDelta;
+        double countsDelta = (countsFromAngle - countsBefore);
+        int countsDeltaInt = (int)countsDelta;
+        double decimal = (10 * countsDelta - 10 * countsDeltaInt) / 10;
+        currentTargetPositionCounts = countsBefore + decimal;
         azimuthSparkMax.getPIDController().setReference(currentTargetPositionCounts, CANSparkMax.ControlType.kSmartMotion);
     }
 
