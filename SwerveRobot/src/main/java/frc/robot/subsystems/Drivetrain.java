@@ -1,6 +1,5 @@
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.kauailabs.navx.frc.AHRS;
@@ -12,16 +11,16 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DutyCycle;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.org.strykeforce.swerve.SwerveDrive;
 import frc.lib.org.strykeforce.swerve.SwerveModule;
 import frc.robot.commands.auton.LiveDashboardHelper;
-import frc.robot.commands.auton.RotateModulesToAngle;
 import frc.robot.utils.WaltonSwerveModule;
 
 import static frc.robot.Constants.SmartDashboardKeys.*;
@@ -99,9 +98,7 @@ public class Drivetrain extends SubsystemBase {
             driveTalon.setInverted(inversions[i]);
             driveTalon.setSensorPhase(inversions[i]);
 
-            DutyCycleEncoder azimuthAbsoluteEncoder = new DutyCycleEncoder(i);
-            azimuthAbsoluteEncoder.setDutyCycleRange(1.0 / 4097.0, 4096.0 / 4097.0);
-            azimuthAbsoluteEncoder.setDistancePerRotation(4096.0);
+            DutyCycle encoderPWM = new DutyCycle(new DigitalInput(i));
 
 //            ProfiledPIDController controller = new ProfiledPIDController(
 //                    /* 20.0 / 1023.0 */ 10.0 / 4096.0, 0.0, 0.0,
@@ -115,7 +112,7 @@ public class Drivetrain extends SubsystemBase {
                     moduleBuilder
                             .azimuthSparkMax(azimuthSparkMax)
                             .driveTalon(driveTalon)
-                            .azimuthEncoder(azimuthAbsoluteEncoder)
+                            .azimuthAbsoluteEncoderPWM(encoderPWM)
                             .wheelLocationMeters(wheelLocations[i])
                             .build();
 

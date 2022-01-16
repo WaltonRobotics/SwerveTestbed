@@ -5,6 +5,7 @@ import com.ctre.phoenix.motorcontrol.can.BaseTalon;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.revrobotics.CANSparkMax;
+import edu.wpi.first.wpilibj.DutyCycle;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -21,7 +22,7 @@ public class WaltonSwerveModule implements SwerveModule {
 
     private final CANSparkMax azimuthSparkMax;
     private final BaseTalon driveTalon;
-    private final DutyCycleEncoder azimuthEncoder;
+    private final DutyCycle azimuthAbsoluteEncoderPWM;
     private final double azimuthAbsoluteCountsPerRev;
     private final double driveCountsPerRev;
     private final double driveGearRatio;
@@ -31,13 +32,14 @@ public class WaltonSwerveModule implements SwerveModule {
     private final Translation2d wheelLocationMeters;
 
     private double currentTargetPositionCounts;
+    private boolean isAzimuthAbsoluteEncoderValid;
 
     private Rotation2d previousAngle = new Rotation2d();
 
     public WaltonSwerveModule(Builder builder) {
         azimuthSparkMax = builder.azimuthSparkMax;
         driveTalon = builder.driveTalon;
-        azimuthEncoder = builder.azimuthEncoder;
+        azimuthAbsoluteEncoderPWM = builder.azimuthAbsoluteEncoderPWM;
         azimuthAbsoluteCountsPerRev = builder.azimuthAbsoluteCountsPerRev;
         driveCountsPerRev = builder.driveCountsPerRev;
         driveGearRatio = builder.driveGearRatio;
@@ -145,7 +147,30 @@ public class WaltonSwerveModule implements SwerveModule {
     }
 
     public int getAzimuthAbsoluteEncoderCounts() {
-        return (4096 - ((int)azimuthEncoder.getDistance()));
+        int frequency = azimuthAbsoluteEncoderPWM.getFrequency();
+        double output = azimuthAbsoluteEncoderPWM.getOutput();
+
+        for (int i = 0; i < 10; i++) {
+            isAzimuthAbsoluteEncoderValid = frequency >= 208 && frequency <= 280;
+
+            if (isAzimuthAbsoluteEncoderValid) {
+                break;
+            }
+        }
+
+        if (!isAzimuthAbsoluteEncoderValid) {
+            DebuggingLog.getInstance().getLogger().log(Level.SEVERE, "Absolute encoder data not valid!");
+        }
+
+        int position = (int)(Math.round(output * 4098.0) - 1);
+
+        if (position < 0) {
+            position = 0;
+        } else if (position > 4095) {
+            position = 4095;
+        }
+
+        return 4095 - position;
     }
 
     public double getAzimuthRelativeEncoderCounts() {
@@ -210,7 +235,7 @@ public class WaltonSwerveModule implements SwerveModule {
         private final int azimuthAbsoluteCountsPerRev = kDefaultTalonSRXCountsPerRev;
         private CANSparkMax azimuthSparkMax;
         private BaseTalon driveTalon;
-        private DutyCycleEncoder azimuthEncoder;
+        private DutyCycle azimuthAbsoluteEncoderPWM;
         private double driveGearRatio;
         private double wheelDiameterInches;
         private int driveCountsPerRev = kDefaultTalonFXCountsPerRev;
@@ -240,8 +265,8 @@ public class WaltonSwerveModule implements SwerveModule {
             throw new IllegalArgumentException("expect drive talon is TalonFX or TalonSRX");
         }
 
-        public Builder azimuthEncoder(DutyCycleEncoder azimuthEncoder) {
-            this.azimuthEncoder = azimuthEncoder;
+        public Builder azimuthAbsoluteEncoderPWM(DutyCycle encoderPWM) {
+            azimuthAbsoluteEncoderPWM = encoderPWM;
             return this;
         }
 
@@ -295,7 +320,7 @@ public class WaltonSwerveModule implements SwerveModule {
                 throw new IllegalArgumentException("azimuth spark max must be set.");
             }
 
-            if (module.azimuthEncoder == null) {
+            if (module.azimuthAbsoluteEncoderPWM == null) {
                 throw new IllegalArgumentException("azimuth encoder must be set.");
             }
 
