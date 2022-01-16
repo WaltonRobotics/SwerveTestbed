@@ -44,6 +44,8 @@ public class Drivetrain extends SubsystemBase {
         WaltonSwerveModule[] swerveModules = new WaltonSwerveModule[4];
         Translation2d[] wheelLocations = getWheelLocationMeters();
 
+        boolean[] inversions = {true, true, true, false};
+
         for (int i = 0; i < 4; i++) {
             var azimuthSparkMax = new CANSparkMax(i + 1, CANSparkMaxLowLevel.MotorType.kBrushless);
             azimuthSparkMax.restoreFactoryDefaults();
@@ -94,13 +96,8 @@ public class Drivetrain extends SubsystemBase {
             driveTalon.enableVoltageCompensation(true);
             driveTalon.setNeutralMode(NeutralMode.Brake);
 
-            if (i == 3) {
-                driveTalon.setInverted(false);
-                driveTalon.setSensorPhase(false);
-            } else {
-                driveTalon.setInverted(true);
-                driveTalon.setSensorPhase(true);
-            }
+            driveTalon.setInverted(inversions[i]);
+            driveTalon.setSensorPhase(inversions[i]);
 
             DutyCycleEncoder azimuthAbsoluteEncoder = new DutyCycleEncoder(i);
             azimuthAbsoluteEncoder.setDutyCycleRange(1.0 / 4097.0, 4096.0 / 4097.0);
