@@ -103,6 +103,7 @@ public class Drivetrain extends SubsystemBase {
             }
 
             DutyCycleEncoder azimuthAbsoluteEncoder = new DutyCycleEncoder(i);
+            azimuthAbsoluteEncoder.setDutyCycleRange(1.0 / 4097.0, 4096.0 / 4097.0);
             azimuthAbsoluteEncoder.setDistancePerRotation(4096.0);
 
 //            ProfiledPIDController controller = new ProfiledPIDController(
