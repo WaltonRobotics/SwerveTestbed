@@ -124,6 +124,8 @@ public class WaltonSwerveModule implements SwerveModule {
         double azimuthSetpoint = Math.IEEEremainder((azimuthAbsoluteCounts - reference) / azimuthAbsoluteCountsPerRev, 1.0);
 
         azimuthSparkMax.getEncoder().setPosition(azimuthSetpoint);
+
+        azimuthSparkMax.getPIDController().setReference(azimuthSetpoint, CANSparkMax.ControlType.kSmartMotion);
     }
 
     public CANSparkMax getAzimuthSparkMax() {
