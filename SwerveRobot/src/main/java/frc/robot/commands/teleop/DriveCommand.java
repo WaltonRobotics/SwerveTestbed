@@ -1,5 +1,6 @@
 package frc.robot.commands.teleop;
 
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.XboxController;
@@ -12,6 +13,10 @@ import static frc.robot.OI.*;
 import static frc.robot.Robot.drivetrain;
 
 public class DriveCommand extends CommandBase {
+
+    private final SlewRateLimiter forwardLimiter = new SlewRateLimiter(kMaxSpeedMetersPerSecond * 3.0);
+    private final SlewRateLimiter strafeLimiter = new SlewRateLimiter(kMaxSpeedMetersPerSecond * 3.0);
+    private final SlewRateLimiter yawLimiter = new SlewRateLimiter(kMaxOmega * 3.0);
 
     private static final double FORWARD_DEADBAND = 0.1;
     private static final double STRAFE_DEADBAND = 0.1;
@@ -49,13 +54,17 @@ public class DriveCommand extends CommandBase {
 //            yaw = yawScale.apply(rightJoystick.getTwist());
 //        }
 
-        forward = forwardScale.apply(-leftJoystick.getY());
-        strafe = strafeScale.apply(-leftJoystick.getX());
-        yaw = yawScale.apply(-rightJoystick.getTwist());
+        forward = forwardScale.apply(-gamepad.getLeftY());
+        strafe = strafeScale.apply(-gamepad.getLeftX());
+        yaw = yawScale.apply(-gamepad.getRightX());
 
-        double vx = forward * kMaxSpeedMetersPerSecond;
-        double vy = strafe * kMaxSpeedMetersPerSecond;
-        double omega = yaw * kMaxOmega;
+        double vx = forwardLimiter.calculate(forward * kMaxSpeedMetersPerSecond);
+        double vy = strafeLimiter.calculate(strafe * kMaxSpeedMetersPerSecond);
+        double omega = yawLimiter.calculate(yaw * kMaxOmega);
+
+//        double vx = forward * kMaxSpeedMetersPerSecond;
+//        double vy = strafe * kMaxSpeedMetersPerSecond;
+//        double omega = yaw * kMaxOmega;
 
         drivetrain.move(vx, vy, omega, true);
     }

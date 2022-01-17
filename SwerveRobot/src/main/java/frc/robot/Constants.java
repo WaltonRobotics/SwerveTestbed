@@ -83,7 +83,6 @@ public class Constants {
 
     public static final class SmartDashboardKeys {
 
-        public static final String DRIVETRAIN_SAVE_CURRENT_AZIMUTH_ZERO_KEY = "Drivetrain/Save Current Azimuth Zero";
         public static final String DRIVETRAIN_ROTATE_MODULES_TO_ANGLE_KEY = "Drivetrain/Rotate Modules To Angle";
 
         public static final String DRIVETRAIN_SETPOINT_ANGLE_DEGREES = "Drivetrain/Setpoint Angle Degrees";
@@ -107,6 +106,16 @@ public class Constants {
         public static final String DRIVETRAIN_RIGHT_FRONT_VELOCITY_ERROR = "Drivetrain/Right Front Velocity Error";
         public static final String DRIVETRAIN_LEFT_REAR_VELOCITY_ERROR = "Drivetrain/Left Rear Velocity Error";
         public static final String DRIVETRAIN_RIGHT_REAR_VELOCITY_ERROR = "Drivetrain/Right Rear Velocity Error";
+
+        public static final String DRIVETRAIN_LEFT_FRONT_AZIMUTH_ZERO_VALUE_KEY = "Drivetrain/Left Front Azimuth Zero Value";
+        public static final String DRIVETRAIN_RIGHT_FRONT_AZIMUTH_ZERO_VALUE_KEY = "Drivetrain/Right Front Azimuth Zero Value";
+        public static final String DRIVETRAIN_LEFT_REAR_AZIMUTH_ZERO_VALUE_KEY = "Drivetrain/Left Rear Azimuth Zero Value";
+        public static final String DRIVETRAIN_RIGHT_REAR_AZIMUTH_ZERO_VALUE_KEY = "Drivetrain/Right Rear Azimuth Zero Value";
+
+        public static final String DRIVETRAIN_SAVE_LEFT_FRONT_AZIMUTH_ZERO_KEY = "Drivetrain/Save Left Front Azimuth Zero";
+        public static final String DRIVETRAIN_SAVE_RIGHT_FRONT_AZIMUTH_ZERO_KEY = "Drivetrain/Save Right Front Azimuth Zero";
+        public static final String DRIVETRAIN_SAVE_LEFT_REAR_AZIMUTH_ZERO_KEY = "Drivetrain/Save Left Rear Azimuth Zero";
+        public static final String DRIVETRAIN_SAVE_RIGHT_REAR_AZIMUTH_ZERO_KEY = "Drivetrain/Save Right Rear Azimuth Zero";
 
     }
 

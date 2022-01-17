@@ -110,6 +110,15 @@ public class WaltonSwerveModule implements SwerveModule {
     }
 
     @Override
+    public void storeAzimuthZeroReference(int absoluteCounts) {
+        int index = getWheelIndex();
+        Preferences preferences = Preferences.getInstance();
+        String key = String.format("SwerveDrive/wheel.%d", index);
+        preferences.putInt(key, absoluteCounts);
+        DebuggingLog.getInstance().getLogger().log(Level.INFO, "azimuth {0}: saved zero = {1}", new Object[]{index, absoluteCounts});
+    }
+
+    @Override
     public void loadAndSetAzimuthZeroReference() {
         int index = getWheelIndex();
         Preferences preferences = Preferences.getInstance();

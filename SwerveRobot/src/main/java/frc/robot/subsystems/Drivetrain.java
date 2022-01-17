@@ -51,7 +51,7 @@ public class Drivetrain extends SubsystemBase {
             azimuthSparkMax.enableVoltageCompensation(12.0);
             azimuthSparkMax.setSmartCurrentLimit(80);
             azimuthSparkMax.setOpenLoopRampRate(0.0);
-            azimuthSparkMax.setIdleMode(CANSparkMax.IdleMode.kCoast);
+            azimuthSparkMax.setIdleMode(CANSparkMax.IdleMode.kBrake);
             azimuthSparkMax.setInverted(true);
 
             RelativeEncoder azimuthRelativeEncoder = azimuthSparkMax.getEncoder();
@@ -134,10 +134,20 @@ public class Drivetrain extends SubsystemBase {
         }
     }
 
-    public void saveCurrentPositionsAsAzimuthZeros() {
-        for (SwerveModule module : getSwerveModules()) {
-            module.storeAzimuthZeroReference();
-        }
+    public void saveLeftFrontZero(int absoluteCounts) {
+        getSwerveModules()[0].storeAzimuthZeroReference(absoluteCounts);
+    }
+
+    public void saveRightFrontZero(int absoluteCounts) {
+        getSwerveModules()[1].storeAzimuthZeroReference(absoluteCounts);
+    }
+
+    public void saveLeftRearZero(int absoluteCounts) {
+        getSwerveModules()[2].storeAzimuthZeroReference(absoluteCounts);
+    }
+
+    public void saveRightRearZero(int absoluteCounts) {
+        getSwerveModules()[3].storeAzimuthZeroReference(absoluteCounts);
     }
 
     public void reset() {
@@ -199,7 +209,7 @@ public class Drivetrain extends SubsystemBase {
      */
     @Override
     public void periodic() {
-//        setSpeedAndRotation(0.0, 0.0);
+//        setSpeedAndRotation(0.0, 45.0);
 
         swerveDrive.periodic();
 

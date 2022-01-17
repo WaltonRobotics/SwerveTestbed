@@ -45,6 +45,27 @@ public class Robot extends TimedRobot {
             new RotateModulesToAngle());
 
     SmartDashboard.putNumber(DRIVETRAIN_SETPOINT_ANGLE_DEGREES, 0.0);
+
+    SmartDashboard.putNumber(DRIVETRAIN_LEFT_FRONT_AZIMUTH_ZERO_VALUE_KEY, 0.0);
+    SmartDashboard.putNumber(DRIVETRAIN_RIGHT_FRONT_AZIMUTH_ZERO_VALUE_KEY, 0.0);
+    SmartDashboard.putNumber(DRIVETRAIN_LEFT_REAR_AZIMUTH_ZERO_VALUE_KEY, 0.0);
+    SmartDashboard.putNumber(DRIVETRAIN_RIGHT_REAR_AZIMUTH_ZERO_VALUE_KEY, 0.0);
+
+    SmartDashboard.putData(DRIVETRAIN_SAVE_LEFT_FRONT_AZIMUTH_ZERO_KEY,
+            new InstantCommand(() ->
+                    drivetrain.saveLeftFrontZero((int)SmartDashboard.getNumber(DRIVETRAIN_LEFT_FRONT_AZIMUTH_ZERO_VALUE_KEY, 0.0))));
+
+    SmartDashboard.putData(DRIVETRAIN_SAVE_RIGHT_FRONT_AZIMUTH_ZERO_KEY,
+            new InstantCommand(() ->
+                    drivetrain.saveRightFrontZero((int)SmartDashboard.getNumber(DRIVETRAIN_RIGHT_FRONT_AZIMUTH_ZERO_VALUE_KEY, 0.0))));
+
+    SmartDashboard.putData(DRIVETRAIN_SAVE_LEFT_REAR_AZIMUTH_ZERO_KEY,
+            new InstantCommand(() ->
+                    drivetrain.saveLeftRearZero((int)SmartDashboard.getNumber(DRIVETRAIN_LEFT_REAR_AZIMUTH_ZERO_VALUE_KEY, 0.0))));
+
+    SmartDashboard.putData(DRIVETRAIN_SAVE_RIGHT_REAR_AZIMUTH_ZERO_KEY,
+            new InstantCommand(() ->
+                    drivetrain.saveRightRearZero((int)SmartDashboard.getNumber(DRIVETRAIN_RIGHT_REAR_AZIMUTH_ZERO_VALUE_KEY, 0.0))));
   }
 
   /**
