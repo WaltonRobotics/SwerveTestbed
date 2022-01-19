@@ -1,5 +1,6 @@
 package frc.robot.commands.auton;
 
+import com.pathplanner.lib.PathPlannerTrajectory;
 import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -25,11 +26,11 @@ public class SwerveTrajectoryCommand extends CommandBase {
     }
 
     public void initialize() {
-        var p = 6.0;
+        var p = 8.0;
         var d = p / 100.0;
         ProfiledPIDController thetaController =
                 new ProfiledPIDController(
-                        2.5,
+                        4.0,
                         0,
                         0,
                         new TrapezoidProfile.Constraints(kMaxOmega / 2.0, 3.14));
@@ -55,7 +56,7 @@ public class SwerveTrajectoryCommand extends CommandBase {
         double currentTime = timer.get();
 
         Trajectory.State state = trajectory.sample(currentTime);
-        ChassisSpeeds speeds = holonomicDriveController.calculate(drivetrain.getPoseMeters(), state, Rotation2d.fromDegrees(0.0));
+        ChassisSpeeds speeds = holonomicDriveController.calculate(drivetrain.getPoseMeters(), state, state.poseMeters.getRotation());
 
         drivetrain.move(
                 speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, speeds.omegaRadiansPerSecond, false);
