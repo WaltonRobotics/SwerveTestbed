@@ -98,10 +98,8 @@ public class Robot extends TimedRobot {
 //    CommandScheduler.getInstance().schedule(new AutoDrive());
 
     CommandScheduler.getInstance().schedule(new SequentialCommandGroup(
-            new InstantCommand(() -> drivetrain.resetPose(sCurve.getInitialPose())),
-            new SwerveTrajectoryCommand(sCurve),
-            new SwerveTrajectoryCommand(straight),
-            new SwerveTrajectoryCommand(backupToOrigin)
+            new InstantCommand(() -> drivetrain.resetPose(testTrajectory.getInitialPose())),
+            new SwerveTrajectoryCommand(testTrajectory)
     ));
   }
 

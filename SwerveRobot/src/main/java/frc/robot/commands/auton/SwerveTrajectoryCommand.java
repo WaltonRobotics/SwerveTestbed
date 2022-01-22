@@ -4,7 +4,6 @@ import com.pathplanner.lib.PathPlannerTrajectory;
 import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -16,21 +15,21 @@ import static frc.robot.Robot.drivetrain;
 
 public class SwerveTrajectoryCommand extends CommandBase {
 
-    private final Trajectory trajectory;
+    private final PathPlannerTrajectory trajectory;
     private final Timer timer = new Timer();
     private HolonomicDriveController holonomicDriveController;
 
-    public SwerveTrajectoryCommand(Trajectory trajectory) {
+    public SwerveTrajectoryCommand(PathPlannerTrajectory trajectory) {
         addRequirements(drivetrain);
         this.trajectory = trajectory;
     }
 
     public void initialize() {
-        var p = 8.0;
+        var p = 6.0;
         var d = p / 100.0;
         ProfiledPIDController thetaController =
                 new ProfiledPIDController(
-                        4.0,
+                        3.0,
                         0,
                         0,
                         new TrapezoidProfile.Constraints(kMaxOmega / 2.0, 3.14));
@@ -55,8 +54,8 @@ public class SwerveTrajectoryCommand extends CommandBase {
     public void execute() {
         double currentTime = timer.get();
 
-        Trajectory.State state = trajectory.sample(currentTime);
-        ChassisSpeeds speeds = holonomicDriveController.calculate(drivetrain.getPoseMeters(), state, state.poseMeters.getRotation());
+        PathPlannerTrajectory.PathPlannerState state = (PathPlannerTrajectory.PathPlannerState) trajectory.sample(currentTime);
+        ChassisSpeeds speeds = holonomicDriveController.calculate(drivetrain.getPoseMeters(), state, state.holonomicRotation);
 
         drivetrain.move(
                 speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, speeds.omegaRadiansPerSecond, false);

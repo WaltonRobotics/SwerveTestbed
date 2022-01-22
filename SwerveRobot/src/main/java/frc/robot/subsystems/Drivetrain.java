@@ -153,6 +153,7 @@ public class Drivetrain extends SubsystemBase {
     public void reset() {
         resetDriveEncoders();
         resetHeading();
+        reloadAzimuthZeros();
     }
 
     public Field2d getField() {
@@ -170,6 +171,10 @@ public class Drivetrain extends SubsystemBase {
 
     public void resetDriveEncoders() {
         swerveDrive.resetDriveEncoders();
+    }
+
+    public void reloadAzimuthZeros() {
+        swerveDrive.reloadAzimuthZeros();
     }
 
     /**

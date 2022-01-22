@@ -184,6 +184,12 @@ public class SwerveDrive {
     gyro.reset();
   }
 
+  public void reloadAzimuthZeros() {
+    for (int i = 0; i < 4; i++) {
+      swerveModules[i].loadAndSetAzimuthZeroReference();
+    }
+  }
+
   /**
    * Update the swerve drive odometry state. Call this from the drive subsystem {@code periodic()}
    * method.
