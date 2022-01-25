@@ -21,7 +21,7 @@ public class Intake extends SubsystemBase{
     public double kSettleTime;
 
     private final VictorSPX mIntakeController = new VictorSPX(1);//kIntakeID dummy value
-    private final Solenoid mDeploySolenoid = new Solenoid(PneumaticsModuleType.CTREPCM, 1); //deployIntakeSolenoid ID
+    //private final Solenoid mDeploySolenoid = new Solenoid(PneumaticsModuleType.CTREPCM, 1); //deployIntakeSolenoid ID
 
     public Intake(){
 
