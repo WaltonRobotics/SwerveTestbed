@@ -13,7 +13,9 @@ import frc.robot.commands.auton.AutoDrive;
 import frc.robot.commands.auton.SwerveTrajectoryCommand;
 import frc.robot.commands.teleop.DriveCommand;
 import frc.robot.commands.auton.RotateModulesToAngle;
+import frc.robot.commands.teleop.IntakeCommand;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Intake;
 
 import static frc.robot.Constants.SmartDashboardKeys.*;
 import static frc.robot.Paths.*;
@@ -27,6 +29,7 @@ import static frc.robot.Paths.*;
 public class Robot extends TimedRobot {
 
   public static Drivetrain drivetrain;
+  public static Intake intake;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -35,6 +38,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     drivetrain = new Drivetrain();
+    intake = new Intake();
 
     CommandScheduler.getInstance().setDefaultCommand(drivetrain, new DriveCommand());
 
@@ -98,8 +102,10 @@ public class Robot extends TimedRobot {
 //    CommandScheduler.getInstance().schedule(new AutoDrive());
 
     CommandScheduler.getInstance().schedule(new SequentialCommandGroup(
+            new InstantCommand(() -> intake.setRollerDutyCycle(.8)),
             new InstantCommand(() -> drivetrain.resetPose(testTrajectory.getInitialPose())),
-            new SwerveTrajectoryCommand(testTrajectory)
+            new SwerveTrajectoryCommand(testTrajectory),
+            new InstantCommand(() -> intake.setRollerDutyCycle(0))
     ));
   }
 
