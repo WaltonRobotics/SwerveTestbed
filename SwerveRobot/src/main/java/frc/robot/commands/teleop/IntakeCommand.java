@@ -17,6 +17,9 @@ public class IntakeCommand extends CommandBase {
         if(intakeButton.get()){
             intake.setRollerDutyCycle(0.8);
         }
+        else{
+            intake.setRollerDutyCycle(0.0);
+        }
     }
 
     @Override

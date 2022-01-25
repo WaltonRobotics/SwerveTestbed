@@ -41,6 +41,7 @@ public class Robot extends TimedRobot {
     intake = new Intake();
 
     CommandScheduler.getInstance().setDefaultCommand(drivetrain, new DriveCommand());
+    CommandScheduler.getInstance().setDefaultCommand(intake, new IntakeCommand());
 
 //    SmartDashboard.putData(DRIVETRAIN_SAVE_CURRENT_AZIMUTH_ZERO_KEY,
 //            new InstantCommand(drivetrain::saveCurrentPositionsAsAzimuthZeros));
