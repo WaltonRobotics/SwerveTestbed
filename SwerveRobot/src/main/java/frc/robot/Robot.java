@@ -9,7 +9,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.commands.auton.AutoDrive;
 import frc.robot.commands.auton.SwerveTrajectoryCommand;
 import frc.robot.commands.teleop.DriveCommand;
 import frc.robot.commands.auton.RotateModulesToAngle;
@@ -71,6 +70,8 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData(DRIVETRAIN_SAVE_RIGHT_REAR_AZIMUTH_ZERO_KEY,
             new InstantCommand(() ->
                     drivetrain.saveRightRearZero((int)SmartDashboard.getNumber(DRIVETRAIN_RIGHT_REAR_AZIMUTH_ZERO_VALUE_KEY, 0.0))));
+
+    SmartDashboard.putNumber("Robot velocity", 0.0);
   }
 
   /**
@@ -83,6 +84,8 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
+
+    SmartDashboard.putNumber("Robot velocity", drivetrain.getSwerveModules()[0].getState().speedMetersPerSecond);
   }
 
   /**
@@ -103,10 +106,10 @@ public class Robot extends TimedRobot {
 //    CommandScheduler.getInstance().schedule(new AutoDrive());
 
     CommandScheduler.getInstance().schedule(new SequentialCommandGroup(
-            new InstantCommand(() -> intake.setRollerDutyCycle(.8)),
+            new InstantCommand(() -> intake.setVoltage(.8)),
             new InstantCommand(() -> drivetrain.resetPose(testTrajectory.getInitialPose())),
             new SwerveTrajectoryCommand(testTrajectory),
-            new InstantCommand(() -> intake.setRollerDutyCycle(0))
+            new InstantCommand(() -> intake.setVoltage(0))
     ));
   }
 

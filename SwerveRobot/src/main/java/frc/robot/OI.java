@@ -10,8 +10,7 @@ import frc.robot.utils.Gamepad;
 
 import static frc.robot.Constants.InputDevices.*;
 import static frc.robot.Robot.drivetrain;
-import static frc.robot.utils.Gamepad.Button.LEFT_TRIGGER;
-import static frc.robot.utils.Gamepad.Button.RIGHT_TRIGGER;
+import static frc.robot.utils.Gamepad.Button.*;
 
 public class OI {
 
@@ -19,6 +18,7 @@ public class OI {
     public static Joystick rightJoystick = new Joystick(kRightJoystickPort);
     public static Gamepad gamepad = new Gamepad(kGamepadPort);
     public static JoystickButton intakeButton = new JoystickButton(gamepad, RIGHT_TRIGGER.getIndex());
+    public static JoystickButton outtakeButton = new JoystickButton(gamepad, RIGHT_BUMPER.getIndex());
     public static JoystickButton resetDrivetrainButton = new JoystickButton(gamepad, LEFT_TRIGGER.getIndex());
 
     static {

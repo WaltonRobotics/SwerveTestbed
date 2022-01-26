@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.utils.DebuggingLog;
 
@@ -20,18 +21,18 @@ public class Intake extends SubsystemBase{
     public double kOuttakeDutyCycle;
     public double kSettleTime;
 
-    private final VictorSPX mIntakeController = new VictorSPX(1);//kIntakeID dummy value
+    private final Spark mIntakeController = new Spark(9);//kIntakeID dummy value
     //private final Solenoid mDeploySolenoid = new Solenoid(PneumaticsModuleType.CTREPCM, 1); //deployIntakeSolenoid ID
 
     public Intake(){
-
+        mIntakeController.setInverted(true);
     }
 
 //    public void setDeployed(boolean isDeployed) {
 //        mDeploySolenoid.set(isDeployed);
 //    }
 
-    public void setRollerDutyCycle(double targetDutyCycle) {
-        mIntakeController.set(ControlMode.PercentOutput, targetDutyCycle);
+    public void setVoltage(double voltage) {
+        mIntakeController.setVoltage(voltage);
     }
 }
