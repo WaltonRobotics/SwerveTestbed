@@ -71,7 +71,7 @@ public class Robot extends TimedRobot {
             new InstantCommand(() ->
                     drivetrain.saveRightRearZero((int)SmartDashboard.getNumber(DRIVETRAIN_RIGHT_REAR_AZIMUTH_ZERO_VALUE_KEY, 0.0))));
 
-    SmartDashboard.putNumber("Robot velocity", 0.0);
+    SmartDashboard.putNumber(DRIVETRAIN_SPEED_MSEC, 0.0);
   }
 
   /**
@@ -84,8 +84,6 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
-
-    SmartDashboard.putNumber("Robot velocity", drivetrain.getSwerveModules()[0].getState().speedMetersPerSecond);
   }
 
   /**
