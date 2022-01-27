@@ -13,9 +13,8 @@ public class Constants {
 
     public static final class InputDevices {
 
-        public static final int kLeftJoystickPort = 0;
-        public static final int kRightJoystickPort = 1;
-        public static final int kGamepadPort = 2;
+        public static final int kLeftControllerPort = 0;
+        public static final int kRightControllerPort = 1;
 
     }
 

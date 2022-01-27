@@ -6,8 +6,7 @@ import frc.lib.org.strykeforce.thirdcoast.util.ExpoScale;
 
 import static frc.robot.Constants.SwerveDriveConfig.kMaxOmega;
 import static frc.robot.Constants.SwerveDriveConfig.kMaxSpeedMetersPerSecond;
-import static frc.robot.OI.leftJoystick;
-import static frc.robot.OI.rightJoystick;
+import static frc.robot.OI.gamepad;
 import static frc.robot.Robot.drivetrain;
 
 public class DriveCommand extends CommandBase {
@@ -33,10 +32,10 @@ public class DriveCommand extends CommandBase {
     }
 
     @Override
-    public void execute(){
-        double forward = forwardScale.apply(-leftJoystick.getY());
-        double strafe = strafeScale.apply(-leftJoystick.getX());
-        double yaw = yawScale.apply(rightJoystick.getTwist());
+    public void execute() {
+        double forward = forwardScale.apply(-gamepad.getLeftY());
+        double strafe = strafeScale.apply(-gamepad.getLeftX());
+        double yaw = yawScale.apply(gamepad.getRightX());
         double vx = forward * kMaxSpeedMetersPerSecond;
         double vy = strafe * kMaxSpeedMetersPerSecond;
         double omega = yaw * kMaxOmega;
