@@ -8,16 +8,20 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycle;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.ProfiledPIDCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.org.strykeforce.swerve.SwerveDrive;
 import frc.lib.org.strykeforce.swerve.SwerveModule;
@@ -34,6 +38,14 @@ public class Drivetrain extends SubsystemBase {
 
     private final SwerveDrive swerveDrive;
     private final AHRS ahrs = new AHRS(SPI.Port.kMXP);
+
+    private final PIDController xController = new PIDController(6.0, 0.0, 6.0 / 100.0);
+    private final PIDController yController = new PIDController(6.0, 0.0, 6.0 / 100.0);
+    private final ProfiledPIDController thetaController = new ProfiledPIDController(
+            3.0,
+            0,
+            0,
+            new TrapezoidProfile.Constraints(kMaxOmega / 2.0, 3.14));
 
     public Drivetrain() {
         var moduleBuilder =
@@ -275,6 +287,18 @@ public class Drivetrain extends SubsystemBase {
 
     public Rotation2d getHeading() {
         return swerveDrive.getHeading();
+    }
+
+    public PIDController getXController() {
+        return xController;
+    }
+
+    public PIDController getYController() {
+        return yController;
+    }
+
+    public ProfiledPIDController getThetaController() {
+        return thetaController;
     }
 
     public void xLockSwerveDrive() {

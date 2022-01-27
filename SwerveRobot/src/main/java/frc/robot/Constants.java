@@ -119,6 +119,12 @@ public class Constants {
         public static final String DRIVETRAIN_SAVE_LEFT_REAR_AZIMUTH_ZERO_KEY = "Drivetrain/Save Left Rear Azimuth Zero";
         public static final String DRIVETRAIN_SAVE_RIGHT_REAR_AZIMUTH_ZERO_KEY = "Drivetrain/Save Right Rear Azimuth Zero";
 
+        public static final String DRIVETRAIN_X_CONTROLLER = "Drivetrain/X Controller";
+        public static final String DRIVETRAIN_Y_CONTROLLER = "Drivetrain/Y Controller";
+        public static final String DRIVETRAIN_THETA_CONTROLLER = "Drivetrain/Theta Controller";
+
+        public static final String INTAKE_VOLTAGE = "Intake voltage";
+
     }
 
     public static class LiveDashboardKeys {
