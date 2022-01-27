@@ -9,13 +9,17 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.commands.auton.RotateModulesToAngle;
 import frc.robot.commands.auton.SwerveTrajectoryCommand;
 import frc.robot.commands.teleop.DriveCommand;
+import frc.robot.commands.auton.RotateModulesToAngle;
+import frc.robot.commands.teleop.IntakeCommand;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Intake;
+
+import static frc.robot.Constants.SmartDashboardKeys.*;
+import static frc.robot.Paths.*;
 
 import static frc.robot.Constants.SmartDashboardKeys.DRIVETRAIN_ROTATE_MODULES_TO_ANGLE_KEY;
-import static frc.robot.Constants.SmartDashboardKeys.DRIVETRAIN_SAVE_CURRENT_AZIMUTH_ZERO_KEY;
 import static frc.robot.Paths.testTrajectory;
 
 /**
@@ -27,6 +31,7 @@ import static frc.robot.Paths.testTrajectory;
 public class Robot extends TimedRobot {
 
   public static Drivetrain drivetrain;
+  public static Intake intake;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -35,14 +40,41 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     drivetrain = new Drivetrain();
+    intake = new Intake();
 
     CommandScheduler.getInstance().setDefaultCommand(drivetrain, new DriveCommand());
+    CommandScheduler.getInstance().setDefaultCommand(intake, new IntakeCommand());
 
-    SmartDashboard.putData(DRIVETRAIN_SAVE_CURRENT_AZIMUTH_ZERO_KEY,
-            new InstantCommand(drivetrain::saveCurrentPositionsAsAzimuthZeros));
+//    SmartDashboard.putData(DRIVETRAIN_SAVE_CURRENT_AZIMUTH_ZERO_KEY,
+//            new InstantCommand(drivetrain::saveCurrentPositionsAsAzimuthZeros));
 
     SmartDashboard.putData(DRIVETRAIN_ROTATE_MODULES_TO_ANGLE_KEY,
             new RotateModulesToAngle());
+
+    SmartDashboard.putNumber(DRIVETRAIN_SETPOINT_ANGLE_DEGREES, 0.0);
+
+    SmartDashboard.putNumber(DRIVETRAIN_LEFT_FRONT_AZIMUTH_ZERO_VALUE_KEY, 0.0);
+    SmartDashboard.putNumber(DRIVETRAIN_RIGHT_FRONT_AZIMUTH_ZERO_VALUE_KEY, 0.0);
+    SmartDashboard.putNumber(DRIVETRAIN_LEFT_REAR_AZIMUTH_ZERO_VALUE_KEY, 0.0);
+    SmartDashboard.putNumber(DRIVETRAIN_RIGHT_REAR_AZIMUTH_ZERO_VALUE_KEY, 0.0);
+
+    SmartDashboard.putData(DRIVETRAIN_SAVE_LEFT_FRONT_AZIMUTH_ZERO_KEY,
+            new InstantCommand(() ->
+                    drivetrain.saveLeftFrontZero((int)SmartDashboard.getNumber(DRIVETRAIN_LEFT_FRONT_AZIMUTH_ZERO_VALUE_KEY, 0.0))));
+
+    SmartDashboard.putData(DRIVETRAIN_SAVE_RIGHT_FRONT_AZIMUTH_ZERO_KEY,
+            new InstantCommand(() ->
+                    drivetrain.saveRightFrontZero((int)SmartDashboard.getNumber(DRIVETRAIN_RIGHT_FRONT_AZIMUTH_ZERO_VALUE_KEY, 0.0))));
+
+    SmartDashboard.putData(DRIVETRAIN_SAVE_LEFT_REAR_AZIMUTH_ZERO_KEY,
+            new InstantCommand(() ->
+                    drivetrain.saveLeftRearZero((int)SmartDashboard.getNumber(DRIVETRAIN_LEFT_REAR_AZIMUTH_ZERO_VALUE_KEY, 0.0))));
+
+    SmartDashboard.putData(DRIVETRAIN_SAVE_RIGHT_REAR_AZIMUTH_ZERO_KEY,
+            new InstantCommand(() ->
+                    drivetrain.saveRightRearZero((int)SmartDashboard.getNumber(DRIVETRAIN_RIGHT_REAR_AZIMUTH_ZERO_VALUE_KEY, 0.0))));
+
+    SmartDashboard.putNumber(DRIVETRAIN_SPEED_MSEC, 0.0);
   }
 
   /**
@@ -69,13 +101,16 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
+    drivetrain.reset();
+    drivetrain.loadAzimuthZeroReference();
+
 //    CommandScheduler.getInstance().schedule(new AutoDrive());
 
-    drivetrain.reset();
-
     CommandScheduler.getInstance().schedule(new SequentialCommandGroup(
+            new InstantCommand(() -> intake.setVoltage(.8)),
             new InstantCommand(() -> drivetrain.resetPose(testTrajectory.getInitialPose())),
-            new SwerveTrajectoryCommand(testTrajectory)
+            new SwerveTrajectoryCommand(testTrajectory),
+            new InstantCommand(() -> intake.setVoltage(0))
     ));
   }
 

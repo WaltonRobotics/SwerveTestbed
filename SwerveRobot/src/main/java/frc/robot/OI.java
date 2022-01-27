@@ -10,14 +10,17 @@ import frc.robot.utils.Gamepad;
 
 import static frc.robot.Constants.InputDevices.*;
 import static frc.robot.Robot.drivetrain;
+import static frc.robot.utils.Gamepad.Button.*;
 
 public class OI {
 
     public static Joystick leftJoystick = new Joystick(kLeftJoystickPort);
     public static Joystick rightJoystick = new Joystick(kRightJoystickPort);
-    public static Gamepad gamepad = new Gamepad(kGamepadPort);
-
-    public static JoystickButton resetDrivetrainButton = new JoystickButton(leftJoystick, 1);
+    public static Gamepad gamepad = new Gamepad(0);
+    public static Gamepad manipulationGamepad = new Gamepad(1);
+    public static JoystickButton intakeButton = new JoystickButton(manipulationGamepad, RIGHT_TRIGGER.getIndex());
+    public static JoystickButton outtakeButton = new JoystickButton(manipulationGamepad, RIGHT_BUMPER.getIndex());
+    public static JoystickButton resetDrivetrainButton = new JoystickButton(gamepad, LEFT_TRIGGER.getIndex());
 
     static {
         resetDrivetrainButton.whenPressed(new SequentialCommandGroup(

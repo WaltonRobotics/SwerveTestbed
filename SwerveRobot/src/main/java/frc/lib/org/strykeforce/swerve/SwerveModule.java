@@ -54,6 +54,8 @@ public interface SwerveModule {
    */
   void storeAzimuthZeroReference();
 
+  void storeAzimuthZeroReference(int absoluteCounts);
+
   /**
    * Loads the current azimuth absolute encoder reference position and sets selected sensor encoder.
    */

@@ -22,13 +22,13 @@ public class Constants {
     public static final class SwerveDriveConfig {
         // TODO: verify diameter and run calibration
         // 500 cm calibration = actual / odometry
-        public static final double kWheelDiameterInches = 3.0 * (584.0 / 501.0);
+        public static final double kWheelDiameterInches = 3.0;
 
         // From: https://github.com/strykeforce/axis-config/
         public static final double kMaxSpeedMetersPerSecond = 3.889;
 
-        public static final double kDistanceBetweenWheelsWidthWiseMeters = Units.inchesToMeters(15.0 + 1.0 / 16.0 + 1.761652 * 2.0);
-        public static final double kDistanceBetweenWheelsLengthWiseMeters = Units.inchesToMeters(16.0 + 17.0 / 32.0 + 1.761652 * 2.0);
+        public static final double kDistanceBetweenWheelsWidthWiseMeters = Units.inchesToMeters(16.0 + 17.0 / 32.0 + 1.761652 * 2.0); // 20.055 in
+        public static final double kDistanceBetweenWheelsLengthWiseMeters = Units.inchesToMeters(15.0 + 1.0 / 16.0 + 1.761652 * 2.0); // 18.586 in
         //Luke says hi
 
         public static final double kMaxOmega =
@@ -63,10 +63,14 @@ public class Constants {
             driveConfig.supplyCurrLimit.triggerThresholdCurrent = 45;
             driveConfig.supplyCurrLimit.triggerThresholdTime = 40;
             driveConfig.supplyCurrLimit.enable = true;
-            driveConfig.slot0.kP = 0.045;
-            driveConfig.slot0.kI = 0.0005;
+            driveConfig.slot0.kP = 0.0051;
+            driveConfig.slot0.kI = 3.01E-05;
             driveConfig.slot0.kD = 0.000;
-            driveConfig.slot0.kF = 0.047;
+            driveConfig.slot0.kF = 0.0455603184323331;
+//            driveConfig.slot0.kP = 0.045;
+//            driveConfig.slot0.kI = 0.0005;
+//            driveConfig.slot0.kD = 0.000;
+//            driveConfig.slot0.kF = 0.047;
             driveConfig.slot0.integralZone = 500;
             driveConfig.slot0.maxIntegralAccumulator = 75_000;
             driveConfig.slot0.allowableClosedloopError = 0;
@@ -79,7 +83,8 @@ public class Constants {
 
     public static final class SmartDashboardKeys {
 
-        public static final String DRIVETRAIN_SAVE_CURRENT_AZIMUTH_ZERO_KEY = "Drivetrain/Save Current Azimuth Zero";
+        public static final String DRIVETRAIN_SPEED_MSEC = "Drivetrain/Drivetrain Speed M per s";
+
         public static final String DRIVETRAIN_ROTATE_MODULES_TO_ANGLE_KEY = "Drivetrain/Rotate Modules To Angle";
 
         public static final String DRIVETRAIN_SETPOINT_ANGLE_DEGREES = "Drivetrain/Setpoint Angle Degrees";
@@ -103,6 +108,16 @@ public class Constants {
         public static final String DRIVETRAIN_RIGHT_FRONT_VELOCITY_ERROR = "Drivetrain/Right Front Velocity Error";
         public static final String DRIVETRAIN_LEFT_REAR_VELOCITY_ERROR = "Drivetrain/Left Rear Velocity Error";
         public static final String DRIVETRAIN_RIGHT_REAR_VELOCITY_ERROR = "Drivetrain/Right Rear Velocity Error";
+
+        public static final String DRIVETRAIN_LEFT_FRONT_AZIMUTH_ZERO_VALUE_KEY = "Drivetrain/Left Front Azimuth Zero Value";
+        public static final String DRIVETRAIN_RIGHT_FRONT_AZIMUTH_ZERO_VALUE_KEY = "Drivetrain/Right Front Azimuth Zero Value";
+        public static final String DRIVETRAIN_LEFT_REAR_AZIMUTH_ZERO_VALUE_KEY = "Drivetrain/Left Rear Azimuth Zero Value";
+        public static final String DRIVETRAIN_RIGHT_REAR_AZIMUTH_ZERO_VALUE_KEY = "Drivetrain/Right Rear Azimuth Zero Value";
+
+        public static final String DRIVETRAIN_SAVE_LEFT_FRONT_AZIMUTH_ZERO_KEY = "Drivetrain/Save Left Front Azimuth Zero";
+        public static final String DRIVETRAIN_SAVE_RIGHT_FRONT_AZIMUTH_ZERO_KEY = "Drivetrain/Save Right Front Azimuth Zero";
+        public static final String DRIVETRAIN_SAVE_LEFT_REAR_AZIMUTH_ZERO_KEY = "Drivetrain/Save Left Rear Azimuth Zero";
+        public static final String DRIVETRAIN_SAVE_RIGHT_REAR_AZIMUTH_ZERO_KEY = "Drivetrain/Save Right Rear Azimuth Zero";
 
     }
 
