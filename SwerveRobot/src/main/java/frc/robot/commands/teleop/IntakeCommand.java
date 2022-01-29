@@ -11,7 +11,7 @@ public class IntakeCommand extends CommandBase {
     public IntakeCommand(){
         addRequirements(intake);
 
-        SmartDashboard.putNumber("Intake voltage", 8);
+
     }
 
     @Override
