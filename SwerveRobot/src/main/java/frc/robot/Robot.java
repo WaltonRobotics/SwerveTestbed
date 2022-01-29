@@ -9,14 +9,18 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.commands.auton.AutoDrive;
 import frc.robot.commands.auton.SwerveTrajectoryCommand;
 import frc.robot.commands.teleop.DriveCommand;
 import frc.robot.commands.auton.RotateModulesToAngle;
+import frc.robot.commands.teleop.IntakeCommand;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Intake;
 
 import static frc.robot.Constants.SmartDashboardKeys.*;
 import static frc.robot.Paths.*;
+
+import static frc.robot.Constants.SmartDashboardKeys.DRIVETRAIN_ROTATE_MODULES_TO_ANGLE_KEY;
+import static frc.robot.Paths.testTrajectory;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -27,6 +31,7 @@ import static frc.robot.Paths.*;
 public class Robot extends TimedRobot {
 
   public static Drivetrain drivetrain;
+  public static Intake intake;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -35,8 +40,10 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     drivetrain = new Drivetrain();
+    intake = new Intake();
 
     CommandScheduler.getInstance().setDefaultCommand(drivetrain, new DriveCommand());
+    CommandScheduler.getInstance().setDefaultCommand(intake, new IntakeCommand());
 
 //    SmartDashboard.putData(DRIVETRAIN_SAVE_CURRENT_AZIMUTH_ZERO_KEY,
 //            new InstantCommand(drivetrain::saveCurrentPositionsAsAzimuthZeros));
@@ -66,6 +73,8 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData(DRIVETRAIN_SAVE_RIGHT_REAR_AZIMUTH_ZERO_KEY,
             new InstantCommand(() ->
                     drivetrain.saveRightRearZero((int)SmartDashboard.getNumber(DRIVETRAIN_RIGHT_REAR_AZIMUTH_ZERO_VALUE_KEY, 0.0))));
+
+    SmartDashboard.putNumber(DRIVETRAIN_SPEED_MSEC, 0.0);
   }
 
   /**
@@ -98,8 +107,10 @@ public class Robot extends TimedRobot {
 //    CommandScheduler.getInstance().schedule(new AutoDrive());
 
     CommandScheduler.getInstance().schedule(new SequentialCommandGroup(
+            new InstantCommand(() -> intake.setVoltage(.8)),
             new InstantCommand(() -> drivetrain.resetPose(testTrajectory.getInitialPose())),
-            new SwerveTrajectoryCommand(testTrajectory)
+            new SwerveTrajectoryCommand(testTrajectory),
+            new InstantCommand(() -> intake.setVoltage(0))
     ));
   }
 

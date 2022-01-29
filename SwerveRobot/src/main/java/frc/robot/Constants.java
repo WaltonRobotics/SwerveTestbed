@@ -83,6 +83,8 @@ public class Constants {
 
     public static final class SmartDashboardKeys {
 
+        public static final String DRIVETRAIN_SPEED_MSEC = "Drivetrain/Drivetrain Speed M per s";
+
         public static final String DRIVETRAIN_ROTATE_MODULES_TO_ANGLE_KEY = "Drivetrain/Rotate Modules To Angle";
 
         public static final String DRIVETRAIN_SETPOINT_ANGLE_DEGREES = "Drivetrain/Setpoint Angle Degrees";

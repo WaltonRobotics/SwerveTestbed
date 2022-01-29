@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.kauailabs.navx.frc.AHRS;
@@ -25,6 +26,7 @@ import frc.robot.utils.WaltonSwerveModule;
 
 import static frc.robot.Constants.SmartDashboardKeys.*;
 import static frc.robot.Constants.SwerveDriveConfig.*;
+import static frc.robot.Robot.drivetrain;
 
 public class Drivetrain extends SubsystemBase {
 
@@ -240,6 +242,8 @@ public class Drivetrain extends SubsystemBase {
         SmartDashboard.putNumber(DRIVETRAIN_RIGHT_FRONT_VELOCITY_ERROR, ((WaltonSwerveModule)getSwerveModules()[1]).getDriveVelocityError());
         SmartDashboard.putNumber(DRIVETRAIN_LEFT_REAR_VELOCITY_ERROR, ((WaltonSwerveModule)getSwerveModules()[2]).getDriveVelocityError());
         SmartDashboard.putNumber(DRIVETRAIN_RIGHT_REAR_VELOCITY_ERROR, ((WaltonSwerveModule)getSwerveModules()[3]).getDriveVelocityError());
+
+        SmartDashboard.putNumber(DRIVETRAIN_SPEED_MSEC, Math.abs(getSwerveModules()[0].getState().speedMetersPerSecond));
     }
 
     /**
