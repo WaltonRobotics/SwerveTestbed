@@ -14,8 +14,6 @@ import static frc.robot.utils.Gamepad.Button.*;
 
 public class OI {
 
-    public static Joystick leftJoystick = new Joystick(kLeftJoystickPort);
-    public static Joystick rightJoystick = new Joystick(kRightJoystickPort);
     public static Gamepad gamepad = new Gamepad(0);
     public static Gamepad manipulationGamepad = new Gamepad(1);
     public static JoystickButton intakeButton = new JoystickButton(manipulationGamepad, RIGHT_TRIGGER.getIndex());
