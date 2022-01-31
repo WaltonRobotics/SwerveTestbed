@@ -5,13 +5,12 @@ import com.ctre.phoenix.motorcontrol.can.BaseTalon;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.revrobotics.CANSparkMax;
-import edu.wpi.first.wpilibj.DutyCycle;
-import edu.wpi.first.wpilibj.DutyCycleEncoder;
-import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DutyCycle;
+import edu.wpi.first.wpilibj.Preferences;
 import frc.lib.org.strykeforce.swerve.SwerveModule;
 
 import java.util.logging.Level;
@@ -105,7 +104,7 @@ public class WaltonSwerveModule implements SwerveModule {
         int position = getAzimuthAbsoluteEncoderCounts();
         Preferences preferences = Preferences.getInstance();
         String key = String.format("SwerveDrive/wheel.%d", index);
-        preferences.putInt(key, position);
+        Preferences.putInt(key, position);
         DebuggingLog.getInstance().getLogger().log(Level.INFO, "azimuth {0}: saved zero = {1}", new Object[]{index, position});
     }
 
@@ -114,7 +113,7 @@ public class WaltonSwerveModule implements SwerveModule {
         int index = getWheelIndex();
         Preferences preferences = Preferences.getInstance();
         String key = String.format("SwerveDrive/wheel.%d", index);
-        preferences.putInt(key, absoluteCounts);
+        Preferences.putInt(key, absoluteCounts);
         DebuggingLog.getInstance().getLogger().log(Level.INFO, "azimuth {0}: saved zero = {1}", new Object[]{index, absoluteCounts});
     }
 
@@ -123,7 +122,7 @@ public class WaltonSwerveModule implements SwerveModule {
         int index = getWheelIndex();
         Preferences preferences = Preferences.getInstance();
         String key = String.format("SwerveDrive/wheel.%d", index);
-        int reference = preferences.getInt(key, Integer.MIN_VALUE);
+        int reference = Preferences.getInt(key, Integer.MIN_VALUE);
         if (reference == Integer.MIN_VALUE) {
             DebuggingLog.getInstance().getLogger().log(Level.WARNING, "no saved azimuth zero reference for swerve module {0}", index);
             throw new IllegalStateException();
@@ -171,7 +170,7 @@ public class WaltonSwerveModule implements SwerveModule {
             DebuggingLog.getInstance().getLogger().log(Level.SEVERE, "Absolute encoder data not valid!");
         }
 
-        int position = (int)(Math.round(output * 4098.0) - 1);
+        int position = (int) (Math.round(output * 4098.0) - 1);
 
         if (position < 0) {
             position = 0;
@@ -252,7 +251,8 @@ public class WaltonSwerveModule implements SwerveModule {
         private double driveMaximumMetersPerSecond;
         private Translation2d wheelLocationMeters;
 
-        public Builder() {}
+        public Builder() {
+        }
 
         public Builder azimuthSparkMax(CANSparkMax azimuthSparkMax) {
             this.azimuthSparkMax = azimuthSparkMax;

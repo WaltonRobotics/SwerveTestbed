@@ -1,10 +1,6 @@
 package frc.robot;
 
-import com.ctre.phoenix.motorcontrol.FeedbackDevice;
-import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
-import com.ctre.phoenix.motorcontrol.VelocityMeasPeriod;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
-import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
 import com.ctre.phoenix.sensors.SensorVelocityMeasPeriod;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
@@ -35,13 +31,12 @@ public class Constants {
                 (kMaxSpeedMetersPerSecond / Math.hypot(kDistanceBetweenWheelsLengthWiseMeters / 2.0,
                         kDistanceBetweenWheelsWidthWiseMeters / 2.0))
                         / 2.0; // wheel locations below
-
+        public static final int kTalonConfigTimeout = 10; // ms
         // From: https://github.com/strykeforce/axis-config/
         static final double kDriveMotorOutputGear = 12;
         static final double kDriveInputGear = 21;
         static final double kBevelInputGear = 15;
         static final double kBevelOutputGear = 45;
-        public static final int kTalonConfigTimeout = 10; // ms
         public static final double kDriveGearRatio =
                 (kDriveMotorOutputGear / kDriveInputGear) * (kBevelInputGear / kBevelOutputGear);
 
