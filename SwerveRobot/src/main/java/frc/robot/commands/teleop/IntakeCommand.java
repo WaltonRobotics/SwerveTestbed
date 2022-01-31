@@ -18,8 +18,6 @@ public class IntakeCommand extends CommandBase {
     @Override
     public void execute() {
         if (intakeButton.get()) {
-
-
             intake.setVoltage(SmartDashboard.getNumber("Intake voltage", 8));
         } else if (outtakeButton.get()) {
             intake.setVoltage(-SmartDashboard.getNumber("Intake voltage", 8));
