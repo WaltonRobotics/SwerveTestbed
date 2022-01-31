@@ -1,6 +1,5 @@
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.kauailabs.navx.frc.AHRS;
@@ -14,7 +13,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycle;
-import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -26,14 +24,12 @@ import frc.robot.utils.WaltonSwerveModule;
 
 import static frc.robot.Constants.SmartDashboardKeys.*;
 import static frc.robot.Constants.SwerveDriveConfig.*;
-import static frc.robot.Robot.drivetrain;
 
 public class Drivetrain extends SubsystemBase {
 
-    private Field2d field = new Field2d();
-
     private final SwerveDrive swerveDrive;
     private final AHRS ahrs = new AHRS(SPI.Port.kMXP);
+    private final Field2d field = new Field2d();
 
     public Drivetrain() {
         var moduleBuilder =
@@ -206,8 +202,8 @@ public class Drivetrain extends SubsystemBase {
 
     public void setSpeedAndRotation(double speed, double rotationAngleDegrees) {
         for (SwerveModule module : getSwerveModules()) {
-            ((WaltonSwerveModule)module).setDriveClosedLoopMetersPerSecond(speed);
-            ((WaltonSwerveModule)module).setAzimuthRotation2d(Rotation2d.fromDegrees(rotationAngleDegrees));
+            ((WaltonSwerveModule) module).setDriveClosedLoopMetersPerSecond(speed);
+            ((WaltonSwerveModule) module).setAzimuthRotation2d(Rotation2d.fromDegrees(rotationAngleDegrees));
         }
     }
 
@@ -223,25 +219,25 @@ public class Drivetrain extends SubsystemBase {
         field.setRobotPose(getPoseMeters());
         LiveDashboardHelper.putRobotData(getPoseMeters());
 
-        SmartDashboard.putNumber(DRIVETRAIN_LEFT_FRONT_ABSOLUTE_POSITION, ((WaltonSwerveModule)getSwerveModules()[0]).getAzimuthAbsoluteEncoderCounts());
-        SmartDashboard.putNumber(DRIVETRAIN_RIGHT_FRONT_ABSOLUTE_POSITION, ((WaltonSwerveModule)getSwerveModules()[1]).getAzimuthAbsoluteEncoderCounts());
-        SmartDashboard.putNumber(DRIVETRAIN_LEFT_REAR_ABSOLUTE_POSITION, ((WaltonSwerveModule)getSwerveModules()[2]).getAzimuthAbsoluteEncoderCounts());
-        SmartDashboard.putNumber(DRIVETRAIN_RIGHT_REAR_ABSOLUTE_POSITION, ((WaltonSwerveModule)getSwerveModules()[3]).getAzimuthAbsoluteEncoderCounts());
+        SmartDashboard.putNumber(DRIVETRAIN_LEFT_FRONT_ABSOLUTE_POSITION, ((WaltonSwerveModule) getSwerveModules()[0]).getAzimuthAbsoluteEncoderCounts());
+        SmartDashboard.putNumber(DRIVETRAIN_RIGHT_FRONT_ABSOLUTE_POSITION, ((WaltonSwerveModule) getSwerveModules()[1]).getAzimuthAbsoluteEncoderCounts());
+        SmartDashboard.putNumber(DRIVETRAIN_LEFT_REAR_ABSOLUTE_POSITION, ((WaltonSwerveModule) getSwerveModules()[2]).getAzimuthAbsoluteEncoderCounts());
+        SmartDashboard.putNumber(DRIVETRAIN_RIGHT_REAR_ABSOLUTE_POSITION, ((WaltonSwerveModule) getSwerveModules()[3]).getAzimuthAbsoluteEncoderCounts());
 
-        SmartDashboard.putNumber(DRIVETRAIN_LEFT_FRONT_RELATIVE_POSITION, ((WaltonSwerveModule)getSwerveModules()[0]).getAzimuthRelativeEncoderCounts());
-        SmartDashboard.putNumber(DRIVETRAIN_RIGHT_FRONT_RELATIVE_POSITION, ((WaltonSwerveModule)getSwerveModules()[1]).getAzimuthRelativeEncoderCounts());
-        SmartDashboard.putNumber(DRIVETRAIN_LEFT_REAR_RELATIVE_POSITION, ((WaltonSwerveModule)getSwerveModules()[2]).getAzimuthRelativeEncoderCounts());
-        SmartDashboard.putNumber(DRIVETRAIN_RIGHT_REAR_RELATIVE_POSITION, ((WaltonSwerveModule)getSwerveModules()[3]).getAzimuthRelativeEncoderCounts());
+        SmartDashboard.putNumber(DRIVETRAIN_LEFT_FRONT_RELATIVE_POSITION, ((WaltonSwerveModule) getSwerveModules()[0]).getAzimuthRelativeEncoderCounts());
+        SmartDashboard.putNumber(DRIVETRAIN_RIGHT_FRONT_RELATIVE_POSITION, ((WaltonSwerveModule) getSwerveModules()[1]).getAzimuthRelativeEncoderCounts());
+        SmartDashboard.putNumber(DRIVETRAIN_LEFT_REAR_RELATIVE_POSITION, ((WaltonSwerveModule) getSwerveModules()[2]).getAzimuthRelativeEncoderCounts());
+        SmartDashboard.putNumber(DRIVETRAIN_RIGHT_REAR_RELATIVE_POSITION, ((WaltonSwerveModule) getSwerveModules()[3]).getAzimuthRelativeEncoderCounts());
 
-        SmartDashboard.putNumber(DRIVETRAIN_LEFT_FRONT_ANGLE_DEGREES, ((WaltonSwerveModule)getSwerveModules()[0]).getAzimuthRotation2d().getDegrees());
-        SmartDashboard.putNumber(DRIVETRAIN_RIGHT_FRONT_ANGLE_DEGREES, ((WaltonSwerveModule)getSwerveModules()[1]).getAzimuthRotation2d().getDegrees());
-        SmartDashboard.putNumber(DRIVETRAIN_LEFT_REAR_ANGLE_DEGREES, ((WaltonSwerveModule)getSwerveModules()[2]).getAzimuthRotation2d().getDegrees());
-        SmartDashboard.putNumber(DRIVETRAIN_RIGHT_REAR_ANGLE_DEGREES, ((WaltonSwerveModule)getSwerveModules()[3]).getAzimuthRotation2d().getDegrees());
+        SmartDashboard.putNumber(DRIVETRAIN_LEFT_FRONT_ANGLE_DEGREES, ((WaltonSwerveModule) getSwerveModules()[0]).getAzimuthRotation2d().getDegrees());
+        SmartDashboard.putNumber(DRIVETRAIN_RIGHT_FRONT_ANGLE_DEGREES, ((WaltonSwerveModule) getSwerveModules()[1]).getAzimuthRotation2d().getDegrees());
+        SmartDashboard.putNumber(DRIVETRAIN_LEFT_REAR_ANGLE_DEGREES, ((WaltonSwerveModule) getSwerveModules()[2]).getAzimuthRotation2d().getDegrees());
+        SmartDashboard.putNumber(DRIVETRAIN_RIGHT_REAR_ANGLE_DEGREES, ((WaltonSwerveModule) getSwerveModules()[3]).getAzimuthRotation2d().getDegrees());
 
-        SmartDashboard.putNumber(DRIVETRAIN_LEFT_FRONT_VELOCITY_ERROR, ((WaltonSwerveModule)getSwerveModules()[0]).getDriveVelocityError());
-        SmartDashboard.putNumber(DRIVETRAIN_RIGHT_FRONT_VELOCITY_ERROR, ((WaltonSwerveModule)getSwerveModules()[1]).getDriveVelocityError());
-        SmartDashboard.putNumber(DRIVETRAIN_LEFT_REAR_VELOCITY_ERROR, ((WaltonSwerveModule)getSwerveModules()[2]).getDriveVelocityError());
-        SmartDashboard.putNumber(DRIVETRAIN_RIGHT_REAR_VELOCITY_ERROR, ((WaltonSwerveModule)getSwerveModules()[3]).getDriveVelocityError());
+        SmartDashboard.putNumber(DRIVETRAIN_LEFT_FRONT_VELOCITY_ERROR, ((WaltonSwerveModule) getSwerveModules()[0]).getDriveVelocityError());
+        SmartDashboard.putNumber(DRIVETRAIN_RIGHT_FRONT_VELOCITY_ERROR, ((WaltonSwerveModule) getSwerveModules()[1]).getDriveVelocityError());
+        SmartDashboard.putNumber(DRIVETRAIN_LEFT_REAR_VELOCITY_ERROR, ((WaltonSwerveModule) getSwerveModules()[2]).getDriveVelocityError());
+        SmartDashboard.putNumber(DRIVETRAIN_RIGHT_REAR_VELOCITY_ERROR, ((WaltonSwerveModule) getSwerveModules()[3]).getDriveVelocityError());
 
         SmartDashboard.putNumber(DRIVETRAIN_SPEED_MSEC, Math.abs(getSwerveModules()[0].getState().speedMetersPerSecond));
     }

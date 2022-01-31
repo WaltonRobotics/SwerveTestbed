@@ -1,12 +1,11 @@
 package frc.robot.commands.teleop;
 
-import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.lib.org.strykeforce.thirdcoast.util.ExpoScale;
 
 import static frc.robot.Constants.SwerveDriveConfig.kMaxOmega;
 import static frc.robot.Constants.SwerveDriveConfig.kMaxSpeedMetersPerSecond;
-import static frc.robot.OI.*;
+import static frc.robot.OI.gamepad;
 import static frc.robot.Robot.drivetrain;
 
 public class DriveCommand extends CommandBase {
@@ -32,7 +31,7 @@ public class DriveCommand extends CommandBase {
     }
 
     @Override
-    public void execute(){
+    public void execute() {
         double forward = forwardScale.apply(-gamepad.getLeftY());
         double strafe = strafeScale.apply(-gamepad.getLeftX());
         double yaw = yawScale.apply(-gamepad.getRightX());
