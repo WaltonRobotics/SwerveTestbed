@@ -48,10 +48,7 @@ public class Robot extends TimedRobot {
 //    SmartDashboard.putData(DRIVETRAIN_SAVE_CURRENT_AZIMUTH_ZERO_KEY,
 //            new InstantCommand(drivetrain::saveCurrentPositionsAsAzimuthZeros));
 
-    initShuffleboard();
-  }
-
-  private void initShuffleboard() {
+    SmartDashboard.putNumber("Intake voltage", 8);
     SmartDashboard.putData(DRIVETRAIN_ROTATE_MODULES_TO_ANGLE_KEY,
             new RotateModulesToAngle());
 
@@ -79,12 +76,6 @@ public class Robot extends TimedRobot {
                     drivetrain.saveRightRearZero((int)SmartDashboard.getNumber(DRIVETRAIN_RIGHT_REAR_AZIMUTH_ZERO_VALUE_KEY, 0.0))));
 
     SmartDashboard.putNumber(DRIVETRAIN_SPEED_MSEC, 0.0);
-
-    SmartDashboard.putNumber(INTAKE_VOLTAGE, 8);
-
-    SmartDashboard.putData(DRIVETRAIN_X_CONTROLLER, drivetrain.getXController());
-    SmartDashboard.putData(DRIVETRAIN_Y_CONTROLLER, drivetrain.getYController());
-    SmartDashboard.putData(DRIVETRAIN_THETA_CONTROLLER, drivetrain.getThetaController());
   }
 
   /**
@@ -112,7 +103,7 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     drivetrain.reset();
-    drivetrain.loadAzimuthZeroReference();
+//    drivetrain.loadAzimuthZeroReference();
 
 //    CommandScheduler.getInstance().schedule(new AutoDrive());
 
@@ -131,7 +122,8 @@ public class Robot extends TimedRobot {
 
   /** This function is called once when teleop is enabled. */
   @Override
-  public void teleopInit() {}
+  public void teleopInit() {
+  }
 
   /** This function is called periodically during operator control. */
   @Override

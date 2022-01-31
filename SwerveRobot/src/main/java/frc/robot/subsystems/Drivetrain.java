@@ -142,11 +142,11 @@ public class Drivetrain extends SubsystemBase {
 //        saveCurrentPositionsAsAzimuthZeros();
     }
 
-    public void loadAzimuthZeroReference() {
-        for (SwerveModule module : getSwerveModules()) {
-            module.loadAndSetAzimuthZeroReference();
-        }
-    }
+//    public void loadAzimuthZeroReference() {
+//        for (SwerveModule module : getSwerveModules()) {
+//            module.loadAndSetAzimuthZeroReference();
+//        }
+//    }
 
     public void saveLeftFrontZero(int absoluteCounts) {
         getSwerveModules()[0].storeAzimuthZeroReference(absoluteCounts);
