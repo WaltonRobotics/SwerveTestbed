@@ -9,6 +9,6 @@ public class Paths {
 
     public static PathPlannerTrajectory testTrajectory =
 
-            PathPlanner.loadPath("TestTrajectory", Units.feetToMeters(11.0), Units.feetToMeters(5.0));
+            PathPlanner.loadPath("TestTrajectory", Units.feetToMeters(11.0), Units.feetToMeters(5.0), true);
 
 }
