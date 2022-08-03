@@ -10,14 +10,13 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.auton.RotateModulesToAngle;
-import frc.robot.commands.auton.SwerveTrajectoryCommand;
+import frc.robot.commands.auton.SetModulesToVelocity;
 import frc.robot.commands.teleop.DriveCommand;
 import frc.robot.commands.teleop.IntakeCommand;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Intake;
 
 import static frc.robot.Constants.SmartDashboardKeys.*;
-import static frc.robot.Paths.testTrajectory;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -50,6 +49,12 @@ public class Robot extends TimedRobot {
                 new RotateModulesToAngle());
 
         SmartDashboard.putNumber(DRIVETRAIN_SETPOINT_ANGLE_DEGREES, 0.0);
+
+        SmartDashboard.putData(DRIVETRAIN_SET_MODULES_TO_VELOCITY_KEY,
+                new SetModulesToVelocity());
+
+        SmartDashboard.putNumber(DRIVETRAIN_SETPOINT_VELOCITY, 0.0);
+
 
         SmartDashboard.putNumber(DRIVETRAIN_LEFT_FRONT_AZIMUTH_ZERO_VALUE_KEY, 0.0);
         SmartDashboard.putNumber(DRIVETRAIN_RIGHT_FRONT_AZIMUTH_ZERO_VALUE_KEY, 0.0);
@@ -104,12 +109,12 @@ public class Robot extends TimedRobot {
 
 //    CommandScheduler.getInstance().schedule(new AutoDrive());
 
-        CommandScheduler.getInstance().schedule(new SequentialCommandGroup(
-                new InstantCommand(() -> intake.setVoltage(.8)),
-                new InstantCommand(() -> drivetrain.resetPose(testTrajectory.getInitialPose())),
-                new SwerveTrajectoryCommand(testTrajectory),
-                new InstantCommand(() -> intake.setVoltage(0))
-        ));
+//        CommandScheduler.getInstance().schedule(new SequentialCommandGroup(
+//                new InstantCommand(() -> intake.setVoltage(.8)),
+//                new InstantCommand(() -> drivetrain.resetPose(testTrajectory.getInitialPose())),
+//                new SwerveTrajectoryCommand(testTrajectory),
+//                new InstantCommand(() -> intake.setVoltage(0))
+//        ));
     }
 
     /**

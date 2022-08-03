@@ -114,7 +114,7 @@ public class Drivetrain extends SubsystemBase {
                             .wheelLocationMeters(wheelLocations[i])
                             .build();
 
-            swerveModules[i].loadAndSetAzimuthZeroReference();
+           // swerveModules[i].loadAndSetAzimuthZeroReference();
         }
 
         swerveDrive = new SwerveDrive(ahrs, swerveModules);
@@ -126,11 +126,11 @@ public class Drivetrain extends SubsystemBase {
 //        saveCurrentPositionsAsAzimuthZeros();
     }
 
-//    public void loadAzimuthZeroReference() {
-//        for (SwerveModule module : getSwerveModules()) {
-//            module.loadAndSetAzimuthZeroReference();
-//        }
-//    }
+    public void loadAzimuthZeroReference() {
+        for (SwerveModule module : getSwerveModules()) {
+            module.loadAndSetAzimuthZeroReference();
+        }
+    }
 
     public void saveLeftFrontZero(int absoluteCounts) {
         getSwerveModules()[0].storeAzimuthZeroReference(absoluteCounts);
@@ -207,6 +207,11 @@ public class Drivetrain extends SubsystemBase {
         }
     }
 
+    public void setSpeed(double speed){
+        for(SwerveModule module : getSwerveModules()){
+            ((WaltonSwerveModule) module).setDriveClosedLoopMetersPerSecond(speed);
+        }
+    }
     /**
      * Perform periodic swerve drive odometry update.
      */
@@ -240,6 +245,7 @@ public class Drivetrain extends SubsystemBase {
         SmartDashboard.putNumber(DRIVETRAIN_RIGHT_REAR_VELOCITY_ERROR, ((WaltonSwerveModule) getSwerveModules()[3]).getDriveVelocityError());
 
         SmartDashboard.putNumber(DRIVETRAIN_SPEED_MSEC, Math.abs(getSwerveModules()[0].getState().speedMetersPerSecond));
+
     }
 
     /**

@@ -81,8 +81,10 @@ public class Constants {
         public static final String DRIVETRAIN_SPEED_MSEC = "Drivetrain/Drivetrain Speed M per s";
 
         public static final String DRIVETRAIN_ROTATE_MODULES_TO_ANGLE_KEY = "Drivetrain/Rotate Modules To Angle";
+        public static final String DRIVETRAIN_SET_MODULES_TO_VELOCITY_KEY = "Drivetrain/Set Modules To Velocity MPS";
 
         public static final String DRIVETRAIN_SETPOINT_ANGLE_DEGREES = "Drivetrain/Setpoint Angle Degrees";
+        public static final String DRIVETRAIN_SETPOINT_VELOCITY = "Drivetrain/Setpoint Velocity MPS";
 
         public static final String DRIVETRAIN_LEFT_FRONT_ABSOLUTE_POSITION = "Drivetrain/Left Front Absolute Counts";
         public static final String DRIVETRAIN_RIGHT_FRONT_ABSOLUTE_POSITION = "Drivetrain/Right Front Absolute Counts";
