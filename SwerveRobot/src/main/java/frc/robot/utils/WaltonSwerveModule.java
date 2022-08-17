@@ -11,6 +11,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DutyCycle;
 import edu.wpi.first.wpilibj.Preferences;
+import edu.wpi.first.wpilibj.Timer;
 import frc.lib.org.strykeforce.swerve.SwerveModule;
 
 import java.util.logging.Level;
@@ -30,8 +31,11 @@ public class WaltonSwerveModule implements SwerveModule {
     private final double driveMaximumMetersPerSecond;
     private final Translation2d wheelLocationMeters;
 
+
     private double currentTargetPositionCounts;
     private boolean isAzimuthAbsoluteEncoderValid;
+    private double lastAzimuthErrorTime = 0;
+    private boolean hasLoggedAzimuthError = false;
 
     private Rotation2d previousAngle = new Rotation2d();
 
@@ -166,8 +170,9 @@ public class WaltonSwerveModule implements SwerveModule {
             }
         }
 
-        if (!isAzimuthAbsoluteEncoderValid) {
-            DebuggingLog.getInstance().getLogger().log(Level.SEVERE, "Absolute encoder data not valid!");
+        if (!isAzimuthAbsoluteEncoderValid && Timer.getFPGATimestamp() - lastAzimuthErrorTime >= 5) {
+            lastAzimuthErrorTime = Timer.getFPGATimestamp();
+            DebuggingLog.getInstance().getLogger().log(Level.SEVERE, "Absolute encoder data not valid! {0}, {1}", new Object[]{frequency, output});
         }
 
         int position = (int) (Math.round(output * 4098.0) - 1);
