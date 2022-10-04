@@ -114,7 +114,7 @@ public class Robot extends TimedRobot {
 
         CommandScheduler.getInstance().schedule(new SequentialCommandGroup(
 //                new InstantCommand(() -> intake.setVoltage(.8)),
-                new InstantCommand(() -> drivetrain.resetPose(testTrajectory.getInitialPose())),
+              //  new InstantCommand(() -> drivetrain.resetPose(testTrajectory.getInitialPose())),
                 new SwerveTrajectoryCommand(testTrajectory)
 //                new InstantCommand(() -> intake.setVoltage(0))
         ));
