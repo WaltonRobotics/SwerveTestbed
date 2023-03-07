@@ -7,15 +7,21 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
+
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycle;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.org.strykeforce.swerve.SwerveDrive;
 import frc.lib.org.strykeforce.swerve.SwerveModule;
@@ -25,11 +31,18 @@ import frc.robot.utils.WaltonSwerveModule;
 import static frc.robot.Constants.SmartDashboardKeys.*;
 import static frc.robot.Constants.SwerveDriveConfig.*;
 
+import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
+
 public class Drivetrain extends SubsystemBase {
 
     private final SwerveDrive swerveDrive;
     private final AHRS ahrs = new AHRS(SPI.Port.kMXP);
     private final Field2d field = new Field2d();
+
+    private static final double FORWARD_DEADBAND = 0.05;
+    private static final double STRAFE_DEADBAND = 0.05;
+    private static final double YAW_DEADBAND = 0.01;
 
     public Drivetrain() {
         var moduleBuilder =
@@ -174,6 +187,23 @@ public class Drivetrain extends SubsystemBase {
     public void reloadAzimuthZeros() {
         swerveDrive.reloadAzimuthZeros();
     }
+
+    public CommandBase teleopDriveCmd(
+			DoubleSupplier translation, DoubleSupplier strafe, DoubleSupplier rotation,
+			BooleanSupplier robotCentric) {
+		return new RunCommand(() -> {
+			double translationVal = MathUtil.applyDeadband(translation.getAsDouble(), FORWARD_DEADBAND);
+			double strafeVal = MathUtil.applyDeadband(strafe.getAsDouble(), STRAFE_DEADBAND);
+			double rotationVal = MathUtil.applyDeadband(rotation.getAsDouble(), YAW_DEADBAND);
+			// if (!openLoopVal) {
+			translationVal *= kMaxSpeedMetersPerSecond;
+			strafeVal *= kMaxSpeedMetersPerSecond;
+			rotationVal *= kMaxOmega;
+			// }
+
+			move(translationVal, strafeVal, rotationVal, !robotCentric.getAsBoolean());
+		}, this).withName("TeleopDrive");
+	}
 
     /**
      * Returns the configured swerve drive modules.

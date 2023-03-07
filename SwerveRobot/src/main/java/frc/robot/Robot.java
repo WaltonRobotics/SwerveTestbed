@@ -15,6 +15,7 @@ import frc.robot.commands.teleop.DriveCommand;
 import frc.robot.commands.teleop.IntakeCommand;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Intake;
+import frc.robot.utils.Gamepad.Button;
 
 import static frc.robot.Constants.SmartDashboardKeys.*;
 import static frc.robot.Paths.testTrajectory;
@@ -39,7 +40,11 @@ public class Robot extends TimedRobot {
         drivetrain = new Drivetrain();
         intake = new Intake();
 
-        CommandScheduler.getInstance().setDefaultCommand(drivetrain, new DriveCommand());
+        CommandScheduler.getInstance().setDefaultCommand(drivetrain, drivetrain.teleopDriveCmd(
+                () -> OI.gamepad.getLeftY(), 
+                () -> OI.gamepad.getLeftX(), 
+                () -> OI.gamepad.getRightX(), 
+                () -> OI.gamepad.getButton(Button.LEFT_BUMPER)));
         CommandScheduler.getInstance().setDefaultCommand(intake, new IntakeCommand());
 
 //    SmartDashboard.putData(DRIVETRAIN_SAVE_CURRENT_AZIMUTH_ZERO_KEY,
