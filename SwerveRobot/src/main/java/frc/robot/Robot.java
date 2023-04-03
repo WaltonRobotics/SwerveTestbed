@@ -18,7 +18,7 @@ import frc.robot.subsystems.Intake;
 import frc.robot.utils.Gamepad.Button;
 
 import static frc.robot.Constants.SmartDashboardKeys.*;
-import static frc.robot.Paths.testTrajectory;
+// import static frc.robot.Paths.testTrajectory;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -111,8 +111,8 @@ public class Robot extends TimedRobot {
 
         CommandScheduler.getInstance().schedule(new SequentialCommandGroup(
                 new InstantCommand(() -> intake.setVoltage(.8)),
-                new InstantCommand(() -> drivetrain.resetPose(testTrajectory.getInitialPose())),
-                new SwerveTrajectoryCommand(testTrajectory),
+                // new InstantCommand(() -> drivetrain.resetPose(testTrajectory.getInitialPose())),
+                // new SwerveTrajectoryCommand(testTrajectory),
                 new InstantCommand(() -> intake.setVoltage(0))
         ));
     }

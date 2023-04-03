@@ -54,7 +54,7 @@ public class Drivetrain extends SubsystemBase {
         WaltonSwerveModule[] swerveModules = new WaltonSwerveModule[4];
         Translation2d[] wheelLocations = getWheelLocationMeters();
 
-        boolean[] inversions = {false, true, true, true};
+        boolean[] inversions = {false, false, true, false};
 
         for (int i = 0; i < 4; i++) {
             var azimuthSparkMax = new CANSparkMax(i + 1, CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -127,7 +127,7 @@ public class Drivetrain extends SubsystemBase {
                             .wheelLocationMeters(wheelLocations[i])
                             .build();
 
-            swerveModules[i].loadAndSetAzimuthZeroReference();
+            // swerveModules[i].loadAndSetAzimuthZeroReference();
         }
 
         swerveDrive = new SwerveDrive(ahrs, swerveModules);
@@ -164,7 +164,7 @@ public class Drivetrain extends SubsystemBase {
     public void reset() {
         resetDriveEncoders();
         resetHeading();
-        reloadAzimuthZeros();
+        // reloadAzimuthZeros();
     }
 
     public Field2d getField() {
