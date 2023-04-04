@@ -54,7 +54,7 @@ public class Drivetrain extends SubsystemBase {
         WaltonSwerveModule[] swerveModules = new WaltonSwerveModule[4];
         Translation2d[] wheelLocations = getWheelLocationMeters();
 
-        boolean[] inversions = {false, false, true, false};
+        boolean[] inversions = {false, false, false, false};
 
         for (int i = 0; i < 4; i++) {
             var azimuthSparkMax = new CANSparkMax(i + 1, CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -136,14 +136,14 @@ public class Drivetrain extends SubsystemBase {
 
         SmartDashboard.putData("Field", field);
 
-//        saveCurrentPositionsAsAzimuthZeros();
+    //    saveCurrentPositionsAsAzimuthZeros();
     }
 
-//    public void loadAzimuthZeroReference() {
-//        for (SwerveModule module : getSwerveModules()) {
-//            module.loadAndSetAzimuthZeroReference();
-//        }
-//    }
+   public void loadAzimuthZeroReference() {
+       for (SwerveModule module : getSwerveModules()) {
+           module.loadAndSetAzimuthZeroReference();
+       }
+   }
 
     public void saveLeftFrontZero(int absoluteCounts) {
         getSwerveModules()[0].storeAzimuthZeroReference(absoluteCounts);
@@ -164,7 +164,7 @@ public class Drivetrain extends SubsystemBase {
     public void reset() {
         resetDriveEncoders();
         resetHeading();
-        // reloadAzimuthZeros();
+        reloadAzimuthZeros();
     }
 
     public Field2d getField() {
